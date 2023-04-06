@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Art/Sprites/Sprite_Card.png" type="Texture" id=1]
+[ext_resource path="res://Art/Fonts/Roboto-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://UI/Elements/ChoosingCard.gd" type="Script" id=3]
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 12
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 2 )
+
+[node name="Button" type="Button"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -108.0
+margin_top = -75.5
+margin_right = 108.0
+margin_bottom = 75.5
+rect_min_size = Vector2( 216, 151 )
+mouse_default_cursor_shape = 2
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+script = ExtResource( 3 )
+
+[node name="Card" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 216, 151 )
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="NameText" type="Label" parent="Card"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -81.412
+margin_top = -54.012
+margin_right = 56.588
+margin_bottom = 45.988
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "НАЗВАНИЕ"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+
+[connection signal="pressed" from="." to="." method="_on_Button_pressed"]

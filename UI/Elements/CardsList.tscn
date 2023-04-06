@@ -1,0 +1,271 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Art/Fonts/Roboto-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://UI/Elements/CardsList.gd" type="Script" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+
+[node name="CardsList" type="TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Негативные установки" type="Button" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Негативные установки"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Негативные установки/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Препятствия и блоки" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Препятствия и блоки"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Препятствия и блоки/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Страхи" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Страхи"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Страхи/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Навыки и умения" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Навыки и умения"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Навыки и умения/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Способности" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Способности"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Способности/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Таланты" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Таланты"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Таланты/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Личностные качества" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Личностные качества"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Личностные качества/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Ценности" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Ценности"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Ценности/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Что делать" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Что делать"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Что делать/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Новые стратегии" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Новые стратегии"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Новые стратегии/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3
+
+[node name="Что я получу" type="Button" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 56.0
+margin_right = -4.0
+margin_bottom = -4.0
+custom_styles/hover = SubResource( 2 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 2 )
+custom_styles/disabled = SubResource( 2 )
+custom_styles/normal = SubResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Что я получу"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="GridContainer" type="GridContainer" parent="Что я получу/ScrollContainer"]
+custom_constants/vseparation = 50
+custom_constants/hseparation = 150
+columns = 3

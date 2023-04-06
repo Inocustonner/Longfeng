@@ -1,0 +1,51 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Art/Sprites/Sprite_DisagreeLot.png" type="Texture" id=1]
+[ext_resource path="res://Art/Fonts/Roboto-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://UI/Elements/PlayerLot.gd" type="Script" id=3]
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 32
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 2 )
+
+[node name="Button" type="Button"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -175.0
+margin_top = -25.0
+margin_right = 175.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 350, 50 )
+mouse_default_cursor_shape = 2
+custom_styles/hover = SubResource( 3 )
+custom_styles/pressed = SubResource( 3 )
+custom_styles/normal = SubResource( 3 )
+script = ExtResource( 3 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/separation = 20
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
+margin_right = 48.0
+margin_bottom = 50.0
+texture = ExtResource( 1 )
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+margin_left = 68.0
+margin_top = 6.0
+margin_right = 157.0
+margin_bottom = 44.0
+custom_colors/font_color = Color( 0.631373, 0.631373, 0.631373, 1 )
+custom_fonts/font = SubResource( 2 )
+text = "Игрок"
+
+[connection signal="pressed" from="." to="." method="_on_Button_pressed"]
