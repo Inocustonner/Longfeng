@@ -71,6 +71,10 @@ func increment_player_position(id, i : int):
 	if(Lobby.player_info[id].amount_moves == MAX_MOVES_ON_SECTION):
 		Lobby.player_info[id].amount_moves = 0
 		var now_sec = _get_section_from_position(Lobby.player_info[id].position)
+		if(now_sec + 1 == 3):
+			set_player_position(id, PositionSections[2][1])
+			emit_signal("on_player_end_playing", id)
+			return
 		Lobby.player_info[id].position = PositionSections[now_sec + 1][0]
 		Board.set_player_to_board(Lobby.player_info[id].obj, Lobby.player_info[id].position)
 		do_move(id)
@@ -80,15 +84,15 @@ func increment_player_position(id, i : int):
 		Lobby.player_info[id].amount_moves = 0
 		
 	Lobby.player_info[id].position += i
+	if(Lobby.player_info[id].position >= PositionSections[2][1]):
+		set_player_position(id, PositionSections[2][1])
+		emit_signal("on_player_end_playing", id)
+		return
 	Board.set_player_to_board(Lobby.player_info[id].obj, Lobby.player_info[id].position)
 	do_move(id)
 
 # Производит ход. Происходит в зависимости на чем стоит игрок
 func do_move(id):
-	if(Lobby.player_info[id].position >= PositionSections[2][1]):
-		set_player_position(id, PositionSections[2][1])
-		emit_signal("on_player_end_playing", id)
-		return
 	match(Board.get_field(Lobby.player_info[id].position).Type):
 		0:
 			add_card_to_player(id)
@@ -138,17 +142,17 @@ func show_card_to_player(id, category):
 	var card = Utility.create_card(category)
 	Lobby.player_info[id].cards.append(card)
 	CuratorNewCard.get_child(0).get_child(0).text = card.Name
-	CuratorNewCard.get_child(2).text = "Это карта не имеет описания!"
+	CuratorNewCard.get_child(2).text = card.Description
 	CuratorNewCard.show()
 	emit_signal("on_started_discussion")
-	rpc_id(id, "_show_card_to_player", card.Name, true)
+	rpc_id(id, "_show_card_to_player", card.Name)
 
 func show_card_to_player_without_add(id, card_name):
 	CuratorNewCard.get_child(0).get_child(0).text = card_name
 	CuratorNewCard.get_child(2).text = "Это карта не имеет описания!"
 	CuratorNewCard.show()
 	emit_signal("on_started_discussion")
-	rpc_id(id, "_show_card_to_player", card_name, true)
+	rpc_id(id, "_show_card_to_player", card_name)
 
 remote func add_card_to_player_CLIENT(id, card):
 	Lobby.player_info[id].cards.append(card)

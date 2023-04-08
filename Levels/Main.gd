@@ -27,6 +27,14 @@ func _ready():
 	Game.connect("on_player_end_playing", self, "_on_player_end_playing")
 
 func _next_player():
+	var bAllEnded = true
+	for id in Lobby.player_ids:
+		if (Lobby.player_info[id].is_end_game == false):
+			bAllEnded = false
+			break
+	if(bAllEnded):
+		return
+	
 	PlayerNow += 1
 	if(PlayerNow == len(Lobby.player_info)):
 		PlayerNow = 0
