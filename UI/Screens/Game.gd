@@ -31,7 +31,7 @@ var SpritesDice = [
 	preload("res://Art/Sprites/Sprite_Dice_6.png")
 ]
 
-onready var PlayerListText = $BottomPanel/HBoxContainer/PlayerListText
+onready var PlayerListText = $BottomPanel/HBoxContainer/VBoxContainer2/PlayerListText
 onready var Board = $Board
 onready var CardsListPlayer = $CardsListPlayer
 onready var NewCard = $NewCard
@@ -133,7 +133,7 @@ func add_card_to_player(id):
 	var card = Utility.create_card(Board.get_field(Lobby.player_info[id].position).Description)
 	Lobby.player_info[id].cards.append(card)
 	CuratorNewCard.get_child(0).get_child(0).text = card.Name
-	CuratorNewCard.get_child(2).text = card.Description
+	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = card.Description
 	CuratorNewCard.show()
 	emit_signal("on_started_discussion")
 	rpc("add_card_to_player_CLIENT", id, card)
@@ -142,14 +142,14 @@ func show_card_to_player(id, category):
 	var card = Utility.create_card(category)
 	Lobby.player_info[id].cards.append(card)
 	CuratorNewCard.get_child(0).get_child(0).text = card.Name
-	CuratorNewCard.get_child(2).text = card.Description
+	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = card.Description
 	CuratorNewCard.show()
 	emit_signal("on_started_discussion")
 	rpc_id(id, "_show_card_to_player", card.Name)
 
 func show_card_to_player_without_add(id, card_name):
 	CuratorNewCard.get_child(0).get_child(0).text = card_name
-	CuratorNewCard.get_child(2).text = "Это карта не имеет описания!"
+	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = "Это карта не имеет описания!"
 	CuratorNewCard.show()
 	emit_signal("on_started_discussion")
 	rpc_id(id, "_show_card_to_player", card_name)
