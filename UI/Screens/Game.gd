@@ -47,7 +47,14 @@ func _ready():
 	pass 
 
 func add_player(id):
-	PlayerListText.text += Lobby.player_info[id].name + "\n"
+	PlayerListText.text = ""
+	var row_amount = 0
+	for player in Lobby.player_info:
+		PlayerListText.text += Lobby.player_info[player].name + " "
+		row_amount += 1
+		if(row_amount == 2):
+			PlayerListText.text += "\n"
+			row_amount = 0
 	
 	var ply = PlayerController.instance()
 	Lobby.player_info[id].obj = ply
@@ -62,6 +69,7 @@ func add_player(id):
 # Первый параметр это id игрока. Второй позиция от 0 на какое поле его поставить
 func set_player_position(id, position):
 	Board.set_player_to_board(Lobby.player_info[id].obj, position)
+	# Важно чтобы set_player_to_board был выше, чем установка позиции в общий список!
 	Lobby.player_info[id].position = position
 
 # Инкрементирует позицию игрока на доске. Запускать только на сервере!

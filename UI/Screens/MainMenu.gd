@@ -47,4 +47,4 @@ func _on_PlayButton_pressed():
 	else:
 		if(len(NameEdit.text) > 0 and Lobby.start_section != -1):
 			Lobby.my_player_info.name = NameEdit.text
-			Network.create_server(7777,3)
+			Network.create_server(7777,6)

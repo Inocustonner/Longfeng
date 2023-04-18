@@ -29,7 +29,7 @@ func set_player_to_board(player, position):
 	#		return
 	
 	#_moving_players.append({player : position})
-	
+
 	if(not player in _moving_players):
 		_moving_players[player] = [position-1, position]
 	else:
