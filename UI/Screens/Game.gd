@@ -44,6 +44,7 @@ func _ready():
 	ChangeScreen.connect("on_start_trade_card", self, "_on_start_trade_card")
 	ChangeScreen.connect("on_stop_trade_card", self, "_on_stop_trade_card")
 	ChangeScreen.connect("on_make_trade", self, "_on_make_trade")
+	Board.connect("completed_move", self, "_on_completed_move_on_board")
 	pass 
 
 func add_player(id):
@@ -83,20 +84,18 @@ func increment_player_position(id, i : int):
 			set_player_position(id, PositionSections[2][1])
 			emit_signal("on_player_end_playing", id)
 			return
-		Lobby.player_info[id].position = PositionSections[now_sec + 1][0]
-		Board.set_player_to_board(Lobby.player_info[id].obj, Lobby.player_info[id].position)
+		set_player_position(id, PositionSections[now_sec + 1][0])
 		do_move(id)
 		return
 	
 	if(_get_section_from_position(Lobby.player_info[id].position) != _get_section_from_position(Lobby.player_info[id].position + i)):
 		Lobby.player_info[id].amount_moves = 0
 		
-	Lobby.player_info[id].position += i
 	if(Lobby.player_info[id].position >= PositionSections[2][1]):
 		set_player_position(id, PositionSections[2][1])
 		emit_signal("on_player_end_playing", id)
 		return
-	Board.set_player_to_board(Lobby.player_info[id].obj, Lobby.player_info[id].position)
+	set_player_position(id, Lobby.player_info[id].position + i)
 	do_move(id)
 
 # Производит ход. Происходит в зависимости на чем стоит игрок
@@ -140,25 +139,19 @@ func do_move(id):
 func add_card_to_player(id):
 	var card = Utility.create_card(Board.get_field(Lobby.player_info[id].position).Description)
 	Lobby.player_info[id].cards.append(card)
-	CuratorNewCard.get_child(0).get_child(0).text = card.Name
-	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = card.Description
-	CuratorNewCard.show()
+	_show_to_currator_new_card(card.Name, card.Description)
 	emit_signal("on_started_discussion")
 	rpc("add_card_to_player_CLIENT", id, card)
 
 func show_card_to_player(id, category):
 	var card = Utility.create_card(category)
 	Lobby.player_info[id].cards.append(card)
-	CuratorNewCard.get_child(0).get_child(0).text = card.Name
-	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = card.Description
-	CuratorNewCard.show()
+	_show_to_currator_new_card(card.Name, card.Description)
 	emit_signal("on_started_discussion")
 	rpc_id(id, "_show_card_to_player", card.Name)
 
 func show_card_to_player_without_add(id, card_name):
-	CuratorNewCard.get_child(0).get_child(0).text = card_name
-	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = "Это карта не имеет описания!"
-	CuratorNewCard.show()
+	_show_to_currator_new_card(card_name, "Это карта не имеет описания!")
 	emit_signal("on_started_discussion")
 	rpc_id(id, "_show_card_to_player", card_name)
 
@@ -170,11 +163,9 @@ remote func add_card_to_player_CLIENT(id, card):
 
 remote func _show_card_to_player(card_name):
 	NewCard.get_child(0).text = card_name
-	NewCard.show()
 
 func show_new_card_to_player():
 	NewCard.get_child(0).text = Lobby.player_info[get_tree().get_network_unique_id()].cards[len(Lobby.player_info[get_tree().get_network_unique_id()].cards) - 1].Name
-	NewCard.show()
 
 func hide_new_card_to_player():
 	NewCard.hide()
@@ -218,6 +209,21 @@ func set_active_for_change_card(id, bActive):
 func update_player_trades(playerid, card_name):
 	ChangeScreen.update_trades(playerid, card_name)
 
+func _show_to_currator_new_card(name_card, desc):
+	CuratorNewCard.get_child(1).disabled = true
+	CuratorNewCard.get_child(0).get_child(0).text = name_card
+	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = desc
+	CuratorNewCard.show()
+	var timer := Timer.new()
+	add_child(timer)
+	timer.wait_time = 2.0
+	timer.one_shot = true
+	timer.start()
+	timer.connect("timeout", self, "_enable_button_currator")
+
+func _enable_button_currator():
+	CuratorNewCard.get_child(1).disabled = false
+
 # Показать карты игрока
 func _on_Button_pressed():
 	if(CardsListPlayer.visible):
@@ -243,6 +249,9 @@ func _on_stop_trade_card():
 
 func _on_make_trade(ChooisedPlayerId):
 	emit_signal("on_make_trade", ChooisedPlayerId)
+
+func _on_completed_move_on_board():
+	NewCard.show()
 
 
 func _on_CloseCardsButton_pressed():

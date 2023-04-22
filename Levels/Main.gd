@@ -143,7 +143,8 @@ func _on_connected_to_server():
 
 func _on_player_released(id):
 	Game.add_player(id)
-	Game.set_player_position(id, Game.PositionSections[Lobby.start_section][0])
+	Lobby.player_info[id].position = Game.PositionSections[Lobby.start_section][0]
+	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Game.PositionSections[Lobby.start_section][0])
 	if(get_tree().is_network_server()):
 		if(PlayerNow == NO_BODY_GO):
 			PlayerNow = 0
