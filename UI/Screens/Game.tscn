@@ -1350,9 +1350,9 @@ custom_fonts/mono_font = SubResource( 13 )
 custom_fonts/normal_font = SubResource( 13 )
 bbcode_enabled = true
 bbcode_text = "Игроки:
-[color=#d30c7b]c1[/color] [color=#a7abdd]c2[/color]"
+"
 text = "Игроки:
-c1 c2"
+"
 fit_content_height = true
 
 [node name="TextureRect" type="TextureRect" parent="BottomPanel"]
