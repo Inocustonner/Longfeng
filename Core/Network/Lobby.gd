@@ -4,8 +4,9 @@ signal on_player_released(id)
 
 # Информация о игроке
 # name - имя игрока; obj - ссылка на объект игрока в игре; position - позиция на доске;
-# cards - карты; amount_moves - количество ходов за секцию.
-var my_player_info = {name = "", obj = null, position = 0, cards = [], amount_moves = 0, start_section = -1, is_end_game = false}
+# cards - карты; amount_moves - количество ходов за секцию; position_list - позиция каким подключился игрок
+var my_player_info = {name = "", obj = null, position = 0, cards = [], amount_moves = 0, start_section = -1, is_end_game = false,
+						position_list = 0}
 # Список информации о игроках
 var player_info = {}
 # Массив ID игроков по порядку их подключения. Хранится только на сервере
@@ -24,6 +25,7 @@ master func _register_player(info):
 	var id = get_tree().get_rpc_sender_id()
 	player_info[id] = info
 	player_ids.append(id)
+	player_info[id].position_list = len(player_ids) - 1
 	rpc("_release_player", id, info, start_section)
 
 # Запрашивает информацию о всех игроках у сервера

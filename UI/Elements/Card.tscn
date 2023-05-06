@@ -4,7 +4,7 @@
 [ext_resource path="res://Art/Fonts/Roboto-Bold.ttf" type="DynamicFontData" id=2]
 
 [sub_resource type="DynamicFont" id=1]
-size = 20
+size = 14
 use_mipmaps = true
 use_filter = true
 font_data = ExtResource( 2 )

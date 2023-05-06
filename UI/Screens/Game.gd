@@ -31,6 +31,11 @@ var SpritesDice = [
 	preload("res://Art/Sprites/Sprite_Dice_6.png")
 ]
 
+var ColorsPlayer = [
+	"#d30c7b", "#a7abdd", "#12a0a0",
+	"#0a8754", "#535353", "#16c612"
+]
+
 onready var PlayerListText = $BottomPanel/HBoxContainer/VBoxContainer2/PlayerListText
 onready var Board = $Board
 onready var CardsListPlayer = $CardsListPlayer
@@ -48,20 +53,22 @@ func _ready():
 	pass 
 
 func add_player(id):
-	PlayerListText.text = ""
+	PlayerListText.bbcode_text = "[center]Игроки:\n"
 	var row_amount = 0
 	for player in Lobby.player_info:
-		PlayerListText.text += Lobby.player_info[player].name + " "
+		PlayerListText.bbcode_text += "[color="+ColorsPlayer[Lobby.player_info[player].position_list] + "]" + Lobby.player_info[player].name + "[/color] "
 		row_amount += 1
 		if(row_amount == 2):
-			PlayerListText.text += "\n"
+			PlayerListText.bbcode_text += "\n"
 			row_amount = 0
-	
+	PlayerListText.bbcode_text += "[/center]"
+
 	var ply = PlayerController.instance()
 	Lobby.player_info[id].obj = ply
 	ply.name = str(id)
 	call_deferred("add_child", ply)
 	ply.set_nickname(Lobby.player_info[id].name)
+	ply.set_background(Lobby.player_info[id].position_list)
 	
 	ChangeScreen.add_player(id)
 	return ply

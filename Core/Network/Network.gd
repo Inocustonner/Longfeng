@@ -15,7 +15,6 @@ func _ready():
 	for ip in IP.get_local_addresses():
 		if ip.begins_with("192.168.") and not ip.ends_with("1."):
 			device_ip = ip
-	print(device_ip)
 
 func create_server(port, amount_clients):
 	var peer = NetworkedMultiplayerENet.new()
