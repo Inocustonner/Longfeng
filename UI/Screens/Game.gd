@@ -2,13 +2,13 @@ extends Control
 
 # Массив секций. Первое значение где начинается, второе где заканчивается
 const PositionSections = [
-	[0, 35],
-	[36, 75],
+	[0, 36],
+	[37, 75],
 	[76, 113]
 ]
 
-# Максимальное количество ходов на одной секции
-const MAX_MOVES_ON_SECTION = 17
+# Минимальное количество ходов на одной секции
+const MIN_MOVES_ON_SECTION = 17
 
 signal on_started_discussion
 signal on_ended_discussion
@@ -84,19 +84,16 @@ func set_player_position(id, position):
 # Первый параметр это id игрока.
 func increment_player_position(id, i : int):
 	Lobby.player_info[id].amount_moves += 1
-	if(Lobby.player_info[id].amount_moves == MAX_MOVES_ON_SECTION):
-		Lobby.player_info[id].amount_moves = 0
-		var now_sec = _get_section_from_position(Lobby.player_info[id].position)
-		if(now_sec + 1 == 3):
-			set_player_position(id, PositionSections[2][1])
-			emit_signal("on_player_end_playing", id)
-			return
-		set_player_position(id, PositionSections[now_sec + 1][0])
-		do_move(id)
-		return
-	
+	print(str(id) + " : " + str(Lobby.player_info[id].amount_moves))
 	if(_get_section_from_position(Lobby.player_info[id].position) != _get_section_from_position(Lobby.player_info[id].position + i)):
-		Lobby.player_info[id].amount_moves = 0
+		if(Lobby.player_info[id].amount_moves < MIN_MOVES_ON_SECTION):
+			print(str(id) + " : недостаточно ходов, возвращаем в начало!")
+			var now_sec = _get_section_from_position(Lobby.player_info[id].position)
+			set_player_position(id, PositionSections[now_sec][0])
+			do_move(id)
+			return
+		else:
+			Lobby.player_info[id].amount_moves = 0
 		
 	if(Lobby.player_info[id].position >= PositionSections[2][1]):
 		set_player_position(id, PositionSections[2][1])
@@ -115,9 +112,9 @@ func do_move(id):
 		2: # FINISH
 			emit_signal("on_player_end_playing", id)
 		3: # Осознанность
-			show_card_to_player(id, "осознанность")
+			add_card_to_player(id)
 		4: # Секрет
-			show_card_to_player(id, "секретик")
+			add_card_to_player(id)
 		5: # Взаимодействие
 			if(Lobby.player_info[id].position < PositionSections[0][1]):
 				emit_signal("on_started_trading_between_players", id, rand_range(0,1))
@@ -127,15 +124,13 @@ func do_move(id):
 			emit_signal("on_ended_discussion")
 		7: # Ловушка
 			Lobby.player_info[id].amount_moves = 0
+			add_card_to_player(id)
 			if(Lobby.player_info[id].position <= PositionSections[0][1]):
 				set_player_position(id, PositionSections[0][0])
 			else: if(Lobby.player_info[id].position <= PositionSections[1][1]):
 				set_player_position(id, PositionSections[1][0])
 			else: if(Lobby.player_info[id].position <= PositionSections[2][1]):
 				set_player_position(id, PositionSections[2][0])
-			if(Board.get_field(Lobby.player_info[id].position).Type == 0):
-				add_card_to_player(id)
-			show_card_to_player_without_add(id, "ЗАСАДА")
 		8: # Сам себе хозяин
 			if(rand_range(0,1) == 0):
 				set_player_position(id, PositionSections[_get_section_from_position(Lobby.player_info[id].position) + 1][0])
