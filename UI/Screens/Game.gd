@@ -84,12 +84,13 @@ func set_player_position(id, position):
 # Первый параметр это id игрока.
 func increment_player_position(id, i : int):
 	Lobby.player_info[id].amount_moves += 1
-	print(str(id) + " : " + str(Lobby.player_info[id].amount_moves))
 	if(_get_section_from_position(Lobby.player_info[id].position) != _get_section_from_position(Lobby.player_info[id].position + i)):
 		if(Lobby.player_info[id].amount_moves < MIN_MOVES_ON_SECTION):
-			print(str(id) + " : недостаточно ходов, возвращаем в начало!")
 			var now_sec = _get_section_from_position(Lobby.player_info[id].position)
-			set_player_position(id, PositionSections[now_sec][0])
+			if(now_sec == 0):
+				set_player_position(id, PositionSections[0][0] + 1)
+			else:
+				set_player_position(id, PositionSections[now_sec][0])
 			do_move(id)
 			return
 		else:
