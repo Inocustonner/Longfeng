@@ -87,10 +87,11 @@ func increment_player_position(id, i : int):
 	if(_get_section_from_position(Lobby.player_info[id].position) != _get_section_from_position(Lobby.player_info[id].position + i)):
 		if(Lobby.player_info[id].amount_moves < MIN_MOVES_ON_SECTION):
 			var now_sec = _get_section_from_position(Lobby.player_info[id].position)
-			if(now_sec == 0):
-				set_player_position(id, PositionSections[0][0] + 1)
-			else:
-				set_player_position(id, PositionSections[now_sec][0])
+			var amount_board_in_sec = PositionSections[now_sec][1] - PositionSections[now_sec][0]
+			var next_pos = int((Lobby.player_info[id].position + i) % amount_board_in_sec)
+			if(next_pos == 0):
+				next_pos = 1
+			set_player_position(id, next_pos)
 			do_move(id)
 			return
 		else:
