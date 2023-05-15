@@ -87,3 +87,11 @@ margin_top = 4.0
 margin_right = 188.0
 margin_bottom = 4.0
 alignment = 1
+
+[node name="Button" type="Button" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+disabled = true
+flat = true
+
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

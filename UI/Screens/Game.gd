@@ -9,6 +9,8 @@ const PositionSections = [
 
 # Минимальное количество ходов на одной секции
 const MIN_MOVES_ON_SECTION = 17
+# Константа обозначающая сдвиг со старта в древе детей
+const SHIFT_POSITON = 35
 
 signal on_started_discussion
 signal on_ended_discussion
@@ -18,6 +20,7 @@ signal on_player_stop_trade_card
 signal on_started_trading_between_players(main_trader, type_tradeing)
 signal on_make_trade(ChooisedPlayerId)
 signal on_player_end_playing(playerid)
+signal on_player_want_to_set_pos(new_pos)
 
 var PlayerController = preload("res://Core/Player/BoardPlayer.tscn")
 
@@ -50,6 +53,8 @@ func _ready():
 	ChangeScreen.connect("on_stop_trade_card", self, "_on_stop_trade_card")
 	ChangeScreen.connect("on_make_trade", self, "_on_make_trade")
 	Board.connect("completed_move", self, "_on_completed_move_on_board")
+	for board in range(1, 113):
+		Board.get_field(board).connect("on_pressed", self, "_on_pressed_on_board", [Board.get_field(board).get_board_position()])
 	pass 
 
 func add_player(id):
@@ -134,10 +139,11 @@ func do_move(id):
 			else: if(Lobby.player_info[id].position <= PositionSections[2][1]):
 				set_player_position(id, PositionSections[2][0])
 		8: # Сам себе хозяин
-			if(rand_range(0,1) == 0):
-				set_player_position(id, PositionSections[_get_section_from_position(Lobby.player_info[id].position) + 1][0])
-			else:
-				set_player_position(id, rand_range(PositionSections[_get_section_from_position(Lobby.player_info[id].position)][0], PositionSections[_get_section_from_position(Lobby.player_info[id].position)][1]))
+			var rng = RandomNumberGenerator.new()
+			match(rng.randi_range(0, 2)):
+				0: set_player_position(id, PositionSections[_get_section_from_position(Lobby.player_info[id].position) + 1][0])
+				1: set_player_position(id, rand_range(PositionSections[_get_section_from_position(Lobby.player_info[id].position)][0], PositionSections[_get_section_from_position(Lobby.player_info[id].position)][1]))
+				2: rpc_id(id, "_let_player_choose_new_pos")
 			add_card_to_player(id)
 
 func add_card_to_player(id):
@@ -167,6 +173,12 @@ remote func add_card_to_player_CLIENT(id, card):
 
 remote func _show_card_to_player(card_name):
 	NewCard.get_child(0).text = card_name
+
+# Позволяет игроку выбрать новое место "Сам себе хозяин"
+remote func _let_player_choose_new_pos():
+	IndicatorMove.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
+	for board in range(1, 113):
+		Board.get_field(board).active_button(true)
 
 func show_new_card_to_player():
 	NewCard.get_child(0).text = Lobby.player_info[get_tree().get_network_unique_id()].cards[len(Lobby.player_info[get_tree().get_network_unique_id()].cards) - 1].Name
@@ -257,7 +269,11 @@ func _on_make_trade(ChooisedPlayerId):
 func _on_completed_move_on_board():
 	NewCard.show()
 
-
 func _on_CloseCardsButton_pressed():
 	CardsListPlayer.visible = false
 	CloseCardsButton.visible = false
+
+func _on_pressed_on_board(pos):
+	emit_signal("on_player_want_to_set_pos", pos)
+	for board in range(1, 113):
+		Board.get_field(board).active_button(false)

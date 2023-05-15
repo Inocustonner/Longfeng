@@ -1,5 +1,7 @@
 extends Control
 
+signal on_pressed
+
 enum ETypeBoard {DEFAULT, START, FINISH, AWARENESS, SECRET, INTERACTION, EVENT, TRAP, YOUROWNBOSS}
 
 export (ETypeBoard) var Type = ETypeBoard.DEFAULT
@@ -9,6 +11,7 @@ export var Description : String = "TEST" setget set_board_desc, get_board_desc
 onready var BGSprite = $Sprite
 onready var LabelPosition = $Position
 onready var Text = $Text
+onready var ButtonField = $Button
 
 func _ready():
 	LabelPosition.text = str(Position)
@@ -54,3 +57,9 @@ func set_board_desc(value):
 
 func get_board_desc():
 	return Description
+
+func active_button(bActive : bool):
+	ButtonField.disabled = !bActive
+
+func _on_Button_pressed():
+	emit_signal("on_pressed")

@@ -25,6 +25,7 @@ func _ready():
 	Game.connect("on_started_trading_between_players", self, "_on_started_trading_between_players")
 	Game.connect("on_make_trade", self, "_on_make_trade")
 	Game.connect("on_player_end_playing", self, "_on_player_end_playing")
+	Game.connect("on_player_want_to_set_pos", self, "_on_player_want_to_set_pos")
 
 func _next_player():
 	var bAllEnded = true
@@ -88,6 +89,13 @@ master func _player_maked_trade(ChooisedPlayerId):
 		MainTraderId, cpi, Lobby.player_trade_lots[MainTraderId], Lobby.player_trade_lots[cpi])
 	
 	rpc("_show_to_players_change_screen", false, 0, 0)
+	_on_players_ended_discussion()
+
+master func _move_player_to_him_pos(new_pos):
+	rpc("_ALL_move_player_to_him_pos", get_tree().get_rpc_sender_id(), new_pos)
+
+remotesync func _ALL_move_player_to_him_pos(playerid, new_pos):
+	Game.set_player_position(playerid, new_pos)
 	_on_players_ended_discussion()
 
 remotesync func _make_move(playerid, position, moves):
@@ -178,3 +186,6 @@ func _on_player_stop_trade_card():
 
 func _on_make_trade(ChooisedPlayerId):
 	rpc("_player_maked_trade", ChooisedPlayerId)
+
+func _on_player_want_to_set_pos(new_pos):
+	rpc("_move_player_to_him_pos", new_pos)

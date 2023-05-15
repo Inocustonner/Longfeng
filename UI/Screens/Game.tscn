@@ -1376,6 +1376,7 @@ margin_bottom = 165.0
 texture = ExtResource( 22 )
 
 [node name="NewCard" parent="." instance=ExtResource( 13 )]
+visible = false
 margin_left = -433.0
 margin_top = -302.0
 margin_right = 433.0
