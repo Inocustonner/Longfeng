@@ -139,11 +139,13 @@ func do_move(id):
 			else: if(Lobby.player_info[id].position <= PositionSections[2][1]):
 				set_player_position(id, PositionSections[2][0])
 		8: # Сам себе хозяин
-			var rng = RandomNumberGenerator.new()
-			match(rng.randi_range(0, 2)):
-				0: set_player_position(id, PositionSections[_get_section_from_position(Lobby.player_info[id].position) + 1][0])
-				1: set_player_position(id, rand_range(PositionSections[_get_section_from_position(Lobby.player_info[id].position)][0], PositionSections[_get_section_from_position(Lobby.player_info[id].position)][1]))
-				2: rpc_id(id, "_let_player_choose_new_pos")
+			#var rng = RandomNumberGenerator.new()
+			#match(rng.randi_range(0, 1)):
+			#	0: set_player_position(id, PositionSections[_get_section_from_position(Lobby.player_info[id].position) + 1][0])
+			#	1: set_player_position(id, rand_range(PositionSections[_get_section_from_position(Lobby.player_info[id].position)][0], PositionSections[_get_section_from_position(Lobby.player_info[id].position)][1]))
+			#	2: rpc_id(id, "_let_player_choose_new_pos")
+			#add_card_to_player(id)
+			rpc_id(id, "_let_player_choose_new_pos")
 
 func add_card_to_player(id):
 	var card = Utility.create_card(Board.get_field(Lobby.player_info[id].position).Description)
@@ -175,7 +177,9 @@ remote func _show_card_to_player(card_name):
 
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
+	NewCard.get_child(0).text = "Перемещаетесь на любую клетку в текущем акте или меняете акт"
 	IndicatorMove.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
+	IndicatorMove.get_child(1).hide()
 	for board in range(1, 113):
 		Board.get_field(board).active_button(true)
 
