@@ -93,13 +93,13 @@ script = ExtResource( 12 )
 [node name="Board" type="ScrollContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-scroll_vertical = 100
+scroll_vertical = 1100
 script = ExtResource( 3 )
 
 [node name="Background" type="TextureRect" parent="Board"]
-margin_top = -100.0
+margin_top = -1100.0
 margin_right = 1920.0
-margin_bottom = 2800.0
+margin_bottom = 1800.0
 rect_min_size = Vector2( 1920, 2900 )
 size_flags_horizontal = 3
 texture = ExtResource( 8 )
@@ -908,6 +908,7 @@ margin_left = 100.0
 margin_top = 63.5
 margin_right = 230.0
 margin_bottom = 192.5
+Type = 8
 
 [node name="BoardField61" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = -51.0
@@ -1067,6 +1068,7 @@ margin_left = -219.0
 margin_top = 410.5
 margin_right = -89.0
 margin_bottom = 539.5
+Type = 8
 
 [node name="BoardField85" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = -371.0
