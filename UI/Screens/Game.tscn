@@ -526,42 +526,36 @@ margin_left = -362.0
 margin_top = -1096.5
 margin_right = -232.0
 margin_bottom = -967.5
-Type = 8
 
 [node name="BoardField2" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = -198.0
 margin_top = -1095.5
 margin_right = -68.0
 margin_bottom = -966.5
-Type = 8
 
 [node name="BoardField3" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = -31.0
 margin_top = -1097.5
 margin_right = 99.0
 margin_bottom = -968.5
-Type = 8
 
 [node name="BoardField4" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = 135.0
 margin_top = -1097.5
 margin_right = 265.0
 margin_bottom = -968.5
-Type = 8
 
 [node name="BoardField5" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = 301.0
 margin_top = -1099.5
 margin_right = 431.0
 margin_bottom = -970.5
-Type = 8
 
 [node name="BoardField6" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = 467.0
 margin_top = -1099.5
 margin_right = 597.0
 margin_bottom = -970.5
-Type = 8
 
 [node name="BoardField7" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = 633.0
