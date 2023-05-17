@@ -144,7 +144,6 @@ func do_move(id):
 				0: set_player_position(id, PositionSections[_get_section_from_position(Lobby.player_info[id].position) + 1][0])
 				1: set_player_position(id, rand_range(PositionSections[_get_section_from_position(Lobby.player_info[id].position)][0], PositionSections[_get_section_from_position(Lobby.player_info[id].position)][1]))
 				2: rpc_id(id, "_let_player_choose_new_pos")
-			add_card_to_player(id)
 
 func add_card_to_player(id):
 	var card = Utility.create_card(Board.get_field(Lobby.player_info[id].position).Description)
