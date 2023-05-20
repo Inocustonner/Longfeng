@@ -80,10 +80,12 @@ custom_styles/panel = SubResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_constants/separation = 16
+alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
+margin_top = 21.0
 margin_right = 640.0
-margin_bottom = 38.0
+margin_bottom = 59.0
 alignment = 1
 
 [node name="Label" type="Label" parent="CenterPanel/VBoxContainer/HBoxContainer"]
@@ -97,9 +99,9 @@ align = 1
 valign = 1
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 54.0
+margin_top = 75.0
 margin_right = 640.0
-margin_bottom = 94.0
+margin_bottom = 115.0
 alignment = 1
 
 [node name="NameEdit" type="LineEdit" parent="CenterPanel/VBoxContainer/HBoxContainer2"]
@@ -114,9 +116,9 @@ custom_styles/normal = SubResource( 5 )
 align = 1
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 110.0
+margin_top = 131.0
 margin_right = 640.0
-margin_bottom = 148.0
+margin_bottom = 169.0
 alignment = 1
 
 [node name="Label" type="Label" parent="CenterPanel/VBoxContainer/HBoxContainer3"]
@@ -130,9 +132,9 @@ align = 1
 valign = 1
 
 [node name="HBoxContainer4" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 164.0
+margin_top = 185.0
 margin_right = 640.0
-margin_bottom = 204.0
+margin_bottom = 225.0
 alignment = 1
 
 [node name="IPEdit" type="LineEdit" parent="CenterPanel/VBoxContainer/HBoxContainer4"]
@@ -148,9 +150,9 @@ text = "192.168.1.56"
 align = 1
 
 [node name="HBoxContainer5" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 220.0
+margin_top = 241.0
 margin_right = 640.0
-margin_bottom = 258.0
+margin_bottom = 279.0
 alignment = 1
 
 [node name="Label" type="Label" parent="CenterPanel/VBoxContainer/HBoxContainer5"]
@@ -164,9 +166,9 @@ align = 1
 valign = 1
 
 [node name="HBoxContainer6" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 274.0
+margin_top = 295.0
 margin_right = 640.0
-margin_bottom = 314.0
+margin_bottom = 335.0
 alignment = 1
 
 [node name="SessionEdit" type="LineEdit" parent="CenterPanel/VBoxContainer/HBoxContainer6"]
@@ -181,9 +183,9 @@ custom_styles/normal = SubResource( 5 )
 align = 1
 
 [node name="HBoxContainer7" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 330.0
+margin_top = 351.0
 margin_right = 640.0
-margin_bottom = 368.0
+margin_bottom = 389.0
 alignment = 1
 
 [node name="Label" type="Label" parent="CenterPanel/VBoxContainer/HBoxContainer7"]
@@ -197,9 +199,9 @@ align = 1
 valign = 1
 
 [node name="HBoxContainer8" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 384.0
+margin_top = 405.0
 margin_right = 640.0
-margin_bottom = 421.0
+margin_bottom = 442.0
 custom_constants/separation = 40
 alignment = 1
 
@@ -231,9 +233,9 @@ custom_fonts/font = SubResource( 6 )
 text = "Третья"
 
 [node name="HBoxContainer9" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
-margin_top = 437.0
+margin_top = 458.0
 margin_right = 640.0
-margin_bottom = 497.0
+margin_bottom = 518.0
 custom_constants/separation = 40
 alignment = 1
 

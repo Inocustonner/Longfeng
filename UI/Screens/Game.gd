@@ -177,7 +177,7 @@ remote func _show_card_to_player(card_name):
 
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
-	NewCard.get_child(0).text = "Перемещаетесь на любую клетку в текущем акте или меняете акт"
+	NewCard.get_child(0).text = "N/A"
 	IndicatorMove.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
 	IndicatorMove.get_child(1).hide()
 	for board in range(1, 113):
@@ -270,6 +270,8 @@ func _on_make_trade(ChooisedPlayerId):
 	emit_signal("on_make_trade", ChooisedPlayerId)
 
 func _on_completed_move_on_board():
+	if(NewCard.get_child(0).text == "N/A"):
+		return
 	NewCard.show()
 
 func _on_CloseCardsButton_pressed():

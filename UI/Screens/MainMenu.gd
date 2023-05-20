@@ -1,5 +1,8 @@
 extends Control
 
+# Константа определяющая является ли эта версия серверной.
+const SERVER_VERSION = false
+
 onready var NameEdit = $CenterPanel/VBoxContainer/HBoxContainer2/NameEdit
 onready var IPEdit = $CenterPanel/VBoxContainer/HBoxContainer4/IPEdit
 onready var SessionEdit = $CenterPanel/VBoxContainer/HBoxContainer6/SessionEdit
@@ -9,13 +12,20 @@ onready var CheckBox2 = $CenterPanel/VBoxContainer/HBoxContainer8/CheckBox2
 onready var CheckBox3 = $CenterPanel/VBoxContainer/HBoxContainer8/CheckBox3
 
 func _ready():
+	if(SERVER_VERSION):
+		$CenterPanel/VBoxContainer/HBoxContainer3.hide()
+		$CenterPanel/VBoxContainer/HBoxContainer4.hide()
+		$CenterPanel/VBoxContainer/HBoxContainer5.hide()
+		$CenterPanel/VBoxContainer/HBoxContainer6.hide()
+		$CenterPanel/VBoxContainer/HBoxContainer9/PlayButton.text = "Создать игру"
+	else:
+		$CenterPanel/VBoxContainer/HBoxContainer7.hide()
+		$CenterPanel/VBoxContainer/HBoxContainer8.hide()
+		$CenterPanel/VBoxContainer/HBoxContainer9/PlayButton.text = "Присоединиться"
 	pass
 
 func _on_NameEdit_text_changed(new_text):
-	if len(new_text) != 0:
-		PlayButton.text = "Присоединиться"
-	else:
-		PlayButton.text = "Создать игру"
+	pass
 
 
 func _on_CheckBox1_toggled(button_pressed):
@@ -41,7 +51,7 @@ func _on_CheckBox3_toggled(button_pressed):
 
 func _on_PlayButton_pressed():
 	if len(SessionEdit.text) != 0:
-		if(len(IPEdit.text) > 0 and len(NameEdit.text) > 0):
+		if(len(IPEdit.text) > 0):
 			Lobby.my_player_info.name = NameEdit.text
 			Network.connect_to_server(IPEdit.text, 7777)
 	else:
