@@ -13,8 +13,6 @@ onready var CheckBox3 = $CenterPanel/VBoxContainer/HBoxContainer8/CheckBox3
 
 func _ready():
 	if(SERVER_VERSION):
-		$CenterPanel/VBoxContainer/HBoxContainer3.hide()
-		$CenterPanel/VBoxContainer/HBoxContainer4.hide()
 		$CenterPanel/VBoxContainer/HBoxContainer5.hide()
 		$CenterPanel/VBoxContainer/HBoxContainer6.hide()
 		$CenterPanel/VBoxContainer/HBoxContainer9/PlayButton.text = "Создать игру"
@@ -50,8 +48,8 @@ func _on_CheckBox3_toggled(button_pressed):
 
 
 func _on_PlayButton_pressed():
-	if len(SessionEdit.text) != 0:
-		if(len(IPEdit.text) > 0):
+	if not SERVER_VERSION:
+		if(len(IPEdit.text) > 0 and len(NameEdit.text) > 0):
 			Lobby.my_player_info.name = NameEdit.text
 			Network.connect_to_server(IPEdit.text, 7777)
 	else:
