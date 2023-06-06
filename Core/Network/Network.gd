@@ -10,7 +10,7 @@ var device_ip
 
 func _ready():
 	get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
-	get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
+	#get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
 
 	for ip in IP.get_local_addresses():
 		if ip.begins_with("192.168.") and not ip.ends_with("1."):

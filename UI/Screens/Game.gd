@@ -7,8 +7,8 @@ const PositionSections = [
 	[76, 113]
 ]
 
-# Минимальное количество ходов на одной секции
-const MIN_MOVES_ON_SECTION = 17
+# Максимальное количество ходов на одной секции
+const MAX_MOVES_ON_SECTION = 17
 # Константа обозначающая сдвиг со старта в древе детей
 const SHIFT_POSITON = 35
 
@@ -89,23 +89,27 @@ func set_player_position(id, position):
 # Первый параметр это id игрока.
 func increment_player_position(id, i : int):
 	Lobby.player_info[id].amount_moves += 1
+	
+	if(Lobby.player_info[id].amount_moves >= MAX_MOVES_ON_SECTION):
+		Lobby.player_info[id].amount_moves = 0
+		var now_sec = _get_section_from_position(Lobby.player_info[id].position)
+		if(now_sec + 1 == 3):
+			set_player_position(id, PositionSections[2][1])
+			emit_signal("on_player_end_playing", id)
+			return
+		set_player_position(id, PositionSections[now_sec + 1][0])
+		do_move(id)
+		return
+	
 	if(_get_section_from_position(Lobby.player_info[id].position) != _get_section_from_position(Lobby.player_info[id].position + i)):
-		if(Lobby.player_info[id].amount_moves < MIN_MOVES_ON_SECTION):
+		if(Lobby.player_info[id].amount_moves < MAX_MOVES_ON_SECTION):
+			print(str(id) + " : недостаточно ходов, возвращаем в начало!")
 			var now_sec = _get_section_from_position(Lobby.player_info[id].position)
-			var amount_board_in_sec = PositionSections[now_sec][1] - PositionSections[now_sec][0]
-			var next_pos = PositionSections[now_sec][0] + int((Lobby.player_info[id].position + i) % amount_board_in_sec)
-			if(next_pos == 0):
-				next_pos = 1
-			set_player_position(id, next_pos)
+			set_player_position(id, PositionSections[now_sec][0] + 1)
 			do_move(id)
 			return
 		else:
 			Lobby.player_info[id].amount_moves = 0
-		
-	if(Lobby.player_info[id].position >= PositionSections[2][1]):
-		set_player_position(id, PositionSections[2][1])
-		emit_signal("on_player_end_playing", id)
-		return
 	set_player_position(id, Lobby.player_info[id].position + i)
 	do_move(id)
 
@@ -252,6 +256,9 @@ func _on_Button_pressed():
 		CardsListPlayer.visible = true
 		CloseCardsButton.visible = true
 
+func load_all_cards():
+	for card in Lobby.player_info[get_tree().get_network_unique_id()].cards:
+		CardsListPlayer.add_card(card)
 
 func _on_ButtonEndDisc_pressed():
 	emit_signal("on_ended_discussion")

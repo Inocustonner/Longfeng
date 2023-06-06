@@ -1,11 +1,12 @@
 extends Node
 
 signal on_player_released(id)
+signal on_player_re_released(id)
 
 # Информация о игроке
 # name - имя игрока; obj - ссылка на объект игрока в игре; position - позиция на доске;
 # cards - карты; amount_moves - количество ходов за секцию; position_list - позиция каким подключился игрок
-var my_player_info = {name = "", obj = null, position = 0, cards = [], amount_moves = 0, start_section = -1, is_end_game = false,
+var my_player_info = {name = "", obj = null, position = -1, cards = [], amount_moves = 0, start_section = -1, is_end_game = false,
 						position_list = 0}
 # Список информации о игроках
 var player_info = {}
@@ -19,18 +20,36 @@ var start_section = -1
 
 func _ready():
 	get_tree().connect("connected_to_server", self, "_on_connected_to_server")
+	get_tree().connect("network_peer_disconnected", self, "_on_disconnected_from_server")
 
 # Создает игрока на сервере и передает всем
 master func _register_player(info):
 	var id = get_tree().get_rpc_sender_id()
-	player_info[id] = info
 	player_ids.append(id)
+	for playerid in player_info:
+		var player = player_info[playerid]
+		if player.name == info.name:
+			player_info[id] = player
+			player_info.erase(playerid)
+			rpc("_release_player", id, player_info[id], start_section)
+			return
+	player_info[id] = info
 	player_info[id].position_list = len(player_ids) - 1
 	rpc("_release_player", id, info, start_section)
+
+remote func _on_unregister_player(id):
+	if(player_info[id].obj != null):
+		player_info[id].obj.queue_free()
 
 # Запрашивает информацию о всех игроках у сервера
 master func _get_info_all_players():
 	rpc_id(get_tree().get_rpc_sender_id(), "_release_all_players", player_info)
+
+# Записывате игрок обратно в существующиего плеера
+remote func _re_release_player(id, info, start_sec):
+	player_info[id] = info
+	start_section = start_sec
+	emit_signal("on_player_re_released", id)
 
 # Записывает игрока в общий список игроков
 remotesync func _release_player(id, info, start_sec):
@@ -48,3 +67,8 @@ remote func _release_all_players(players):
 func _on_connected_to_server():
 	rpc("_register_player", my_player_info)
 	rpc("_get_info_all_players")
+
+# Игрок отключается от сервера
+func _on_disconnected_from_server(id):
+	print("Player " + str(id) + " has disconnected")
+	rpc("_on_unregister_player", id)

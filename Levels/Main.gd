@@ -17,6 +17,7 @@ func _ready():
 	Network.connect("on_created_server", self, "_on_connected_to_server") 
 	get_tree().connect("connected_to_server", self, "_on_connected_to_server")
 	Lobby.connect("on_player_released", self, "_on_player_released")
+	get_tree().connect("network_peer_disconnected", self, "_on_player_disconnected")
 	Game.connect("on_started_discussion", self, "_on_players_started_discussion")
 	Game.connect("on_ended_discussion", self, "_on_players_ended_discussion")
 	Game.connect("on_player_want_move", self, "_on_player_want_move")
@@ -35,28 +36,22 @@ func _next_player():
 			break
 	if(bAllEnded):
 		return
+	if(len(Lobby.player_ids) == 1):
+		return
 	
 	PlayerNow += 1
-	if(PlayerNow == len(Lobby.player_info)):
+	if(PlayerNow > len(Lobby.player_ids) - 1):
 		PlayerNow = 0
 	while Lobby.player_info[Lobby.player_ids[PlayerNow]].is_end_game == true:
 		PlayerNow += 1
-		if(PlayerNow == len(Lobby.player_info)):
+		if(PlayerNow > len(Lobby.player_ids) - 1):
 			PlayerNow = 0
 
 func _get_prev_player_id():
 	if(PlayerNow == 0):
-		return Lobby.player_ids[len(Lobby.player_info) - 1]
+		return Lobby.player_ids[len(Lobby.player_ids) - 1]
 	else:
 		return Lobby.player_ids[PlayerNow - 1]
-
-func _process(delta):
-	#if(Input.is_key_pressed(KEY_9)):
-	#	rpc("_player_want_to_change_card", Lobby.player_ids[0], true)
-	#if(Input.is_key_pressed(KEY_0)):
-	#	MainTraderId = Lobby.player_ids[0]
-	#	rpc("_show_to_players_change_screen", true, Lobby.player_ids[0], 1)
-	pass
 
 master func _player_want_to_move():
 	if(bDiscussion):
@@ -151,8 +146,20 @@ func _on_connected_to_server():
 
 func _on_player_released(id):
 	Game.add_player(id)
-	Lobby.player_info[id].position = Game.PositionSections[Lobby.start_section][0]
-	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Game.PositionSections[Lobby.start_section][0])
+	if(Lobby.player_info[id].position == -1):
+		Lobby.player_info[id].position = Game.PositionSections[Lobby.start_section][0]
+	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Lobby.player_info[id].position)
+	if(not get_tree().is_network_server() and id == get_tree().get_network_unique_id()):
+		Game.load_all_cards()
+	if(get_tree().is_network_server()):
+		if(PlayerNow == NO_BODY_GO):
+			PlayerNow = 0
+		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+
+func _on_player_re_released(id):
+	if(Lobby.player_info[id].obj == null):
+		Game.add_player(id)
+	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Lobby.player_info[id].position)
 	if(get_tree().is_network_server()):
 		if(PlayerNow == NO_BODY_GO):
 			PlayerNow = 0
@@ -189,3 +196,16 @@ func _on_make_trade(ChooisedPlayerId):
 
 func _on_player_want_to_set_pos(new_pos):
 	rpc("_move_player_to_him_pos", new_pos)
+
+func _on_player_disconnected(id):
+	if(not get_tree().is_network_server()):
+		return
+	if(len(Lobby.player_ids) <= 0 ):
+		return
+	if(Lobby.player_ids[PlayerNow] == id):
+		Lobby.player_ids.erase(id)
+		PlayerNow = 0
+		bDiscussion = false
+		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+		return
+	Lobby.player_ids.erase(id)
