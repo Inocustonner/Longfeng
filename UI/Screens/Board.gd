@@ -15,9 +15,13 @@ func _ready():
 	#var BoardPath = Utility.read_json_file("user://BoardPath.json")
 	var BoardPath = Utility.read_json_file("res://Data/BoardPath.json")
 	
-	for i in range(SHIFT_POSITON, BoardFields.get_child_count()-1):
-		BoardFields.get_child(i).set_board_position(i-SHIFT_POSITON)
-		BoardFields.get_child(i).set_board_desc(BoardPath[i-SHIFT_POSITON]["name"])
+	for i in range(SHIFT_POSITON, BoardFields.get_child_count()):
+		var cell: Cell = BoardFields.get_child(i)
+		
+		cell.set_board_position(i-SHIFT_POSITON)
+		cell.set_board_desc(BoardPath[i-SHIFT_POSITON]["name"])
+		
+		#print(cell.Position, ") type: ", cell.Type, ", desc:", cell.Description)
 	
 	PlayersTimer = Timer.new()
 	PlayersTimer.connect("timeout",self,"_update_players_boards")

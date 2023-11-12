@@ -1,9 +1,12 @@
 extends TabContainer
 
+
 onready var CARD = preload("res://UI/Elements/Card.tscn")
+
 
 func _ready():
 	pass # Replace with function body.
+
 
 func add_card(card):
 	var new_card = CARD.instance()
@@ -12,6 +15,7 @@ func add_card(card):
 		if(child.name.to_lower() == card.Category.to_lower()):
 			child.get_node("ScrollContainer/GridContainer").add_child(new_card)
 			break
+
 
 func remove_card(card_name):
 	for tab in get_children():
