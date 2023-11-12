@@ -725,6 +725,7 @@ margin_left = -128.0
 margin_top = -600.5
 margin_right = 2.0
 margin_bottom = -471.5
+Type = 8
 
 [node name="BoardField34" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = -281.0
@@ -1289,7 +1290,6 @@ custom_colors/font_color_pressed = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 icon = ExtResource( 16 )
 flat = true
-icon_align = 1
 expand_icon = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="BottomPanel/HBoxContainer"]
