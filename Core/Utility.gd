@@ -3,11 +3,12 @@ extends Node
 func read_json_file(file_path: String) -> Dictionary:
 	var file = File.new()
 	file.open(file_path, File.READ)
+
 	var json_text = file.get_as_text()
 	file.close()
 
-	var json_dict = parse_json(json_text)
-	return json_dict
+	return parse_json(json_text)
+
 
 var Cards = read_json_file("res://Data/Cards.json")
 #var Cards = read_json_file("user://Cards.json")
@@ -19,7 +20,9 @@ func create_card(category : String):
 	card.Description = Cards[category][pos]["long_description"]
 	card.Type = Cards[category][pos]["positivity"]
 	card.Category = category
+
 	return card
+
 
 func create_card_by_name_card(name_card : String):
 	for categories in Cards:
