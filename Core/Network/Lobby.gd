@@ -55,8 +55,11 @@ master func _register_player(info):
 
 
 remote func _on_unregister_player(id):
-	if(player_info[id].obj != null):
+	if(player_info.has(id) and player_info[id].obj != null):
 		player_info[id].obj.queue_free()
+
+		if (not get_tree().is_network_server()):
+			player_info.erase(id)
 
 
 # Запрашивает информацию о всех игроках у сервера
