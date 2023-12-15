@@ -1,7 +1,7 @@
 extends Control
 
 # Константа определяющая является ли эта версия серверной.
-const SERVER_VERSION = false
+const SERVER_VERSION = true
 
 onready var NameEdit = $CenterPanel/VBoxContainer/HBoxContainer2/NameEdit
 onready var IPEdit = $CenterPanel/VBoxContainer/HBoxContainer4/IPEdit
@@ -22,7 +22,7 @@ func _ready():
 		$CenterPanel/VBoxContainer/HBoxContainer9/PlayButton.text = "Присоединиться"
 	pass
 
-func _on_NameEdit_text_changed(new_text):
+func _on_NameEdit_text_changed(_new_text):
 	pass
 
 

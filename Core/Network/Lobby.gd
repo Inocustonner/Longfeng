@@ -81,11 +81,12 @@ remotesync func _release_player(id, info, start_sec):
 	emit_signal("on_player_released", id)
 
 
-remote func _release_all_players(players):
-	for ply in players:
+remote func _release_all_players(players_info):
+	for ply in players_info:
 		if ply == get_tree().get_network_unique_id():
 			continue
-		_release_player(ply, players[ply], start_section)
+
+		_release_player(ply, players_info[ply], start_section)
 
 
 # Подключился игрок. Игрок регистрируется и получает информацию о всех игроках

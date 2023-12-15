@@ -57,7 +57,6 @@ func _ready():
 	
 	for board in range(1, 113):
 		Board.get_field(board).connect("on_pressed", self, "_on_pressed_on_board", [Board.get_field(board).get_board_position()])
-	#pass 
 
 
 func add_player(id):

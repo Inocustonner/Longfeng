@@ -69,7 +69,7 @@ func set_active_player(id, bActive):
 		pl.set_active(bActive)
 
 
-func update_trades(playerid, card_name):
+func update_trades(playerid, _card_name):
 	if(ChooicedPlayerId == playerid):
 		_set_opponent_card(Lobby.player_trade_lots[playerid])
 	if(MainTraderId == playerid):

@@ -255,18 +255,19 @@ func _on_player_want_to_set_pos(new_pos):
 
 
 func _on_player_disconnected(id):
-	if(not get_tree().is_network_server()):
+	var DeletedPlayer: int = Lobby.player_ids.find(id)
+
+
+	if(DeletedPlayer == -1 or (not get_tree().is_network_server()) ):
 		return
 
-	if(len(Lobby.player_ids) <= 0 ):
-		return
+	Lobby.player_ids.erase(id)
 
-	if(Lobby.player_ids[PlayerNow] == id):
-		Lobby.player_ids.erase(id)
+	if(PlayerNow == DeletedPlayer):
 		PlayerNow = 0
 		bDiscussion = false
 		if (Lobby.player_ids.size() > 0):
 			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
-		return
-
-	Lobby.player_ids.erase(id)
+	elif(PlayerNow > DeletedPlayer):
+		PlayerNow -= 1
+		assert(PlayerNow >= 0)
