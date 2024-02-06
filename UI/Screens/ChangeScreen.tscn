@@ -125,11 +125,13 @@ margin_top = -59.0
 margin_right = -306.0
 margin_bottom = -8.0
 rect_min_size = Vector2( 150, 51 )
+focus_mode = 0
 mouse_default_cursor_shape = 2
 custom_colors/font_color_focus = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_pressed = Color( 0.972549, 0, 0.0313726, 1 )
 custom_fonts/font = SubResource( 4 )
+enabled_focus_mode = 0
 text = "Предложить"
 flat = true
 
@@ -150,11 +152,13 @@ margin_top = -59.0
 margin_right = -124.0
 margin_bottom = -8.0
 rect_min_size = Vector2( 150, 51 )
+focus_mode = 0
 mouse_default_cursor_shape = 2
 custom_colors/font_color_focus = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_colors/font_color_pressed = Color( 0.972549, 0, 0.0313726, 1 )
 custom_fonts/font = SubResource( 4 )
+enabled_focus_mode = 0
 text = "Обменять"
 flat = true
 
