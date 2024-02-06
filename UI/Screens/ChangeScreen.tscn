@@ -108,49 +108,65 @@ custom_fonts/font = SubResource( 3 )
 text = "Вы получаете"
 align = 1
 
+[node name="ButtonStartBackrgound" type="TextureRect" parent="."]
+margin_left = 824.0
+margin_top = 661.0
+margin_right = 974.0
+margin_bottom = 712.0
+texture = ExtResource( 4 )
+
 [node name="ButtonStartTrade" type="Button" parent="."]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -471.576
-margin_top = -65.0
-margin_right = -309.576
+margin_left = -456.0
+margin_top = -59.0
+margin_right = -306.0
 margin_bottom = -8.0
+rect_min_size = Vector2( 150, 51 )
 mouse_default_cursor_shape = 2
+custom_colors/font_color_focus = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0.972549, 0, 0.0313726, 1 )
 custom_fonts/font = SubResource( 4 )
 text = "Предложить"
-icon = ExtResource( 4 )
 flat = true
-icon_align = 1
+
+[node name="ButtonMakeBackrgound2" type="TextureRect" parent="."]
+margin_left = 1006.0
+margin_top = 661.0
+margin_right = 1156.0
+margin_bottom = 712.0
+texture = ExtResource( 4 )
 
 [node name="ButtonMakeTrade" type="Button" parent="."]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -272.0
-margin_top = -65.0
-margin_right = -110.0
+margin_left = -274.0
+margin_top = -59.0
+margin_right = -124.0
 margin_bottom = -8.0
+rect_min_size = Vector2( 150, 51 )
 mouse_default_cursor_shape = 2
+custom_colors/font_color_focus = Color( 0, 0, 0, 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_pressed = Color( 0.972549, 0, 0.0313726, 1 )
 custom_fonts/font = SubResource( 4 )
 text = "Обменять"
-icon = ExtResource( 4 )
 flat = true
-icon_align = 1
 
 [node name="IndicatorTrading" type="TextureRect" parent="."]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -540.0
-margin_top = -61.863
-margin_right = -492.0
-margin_bottom = -13.863
+margin_left = -538.0
+margin_top = -59.0
+margin_right = -490.0
+margin_bottom = -11.0
 texture = ExtResource( 3 )
 
 [connection signal="pressed" from="ButtonStartTrade" to="." method="_on_ButtonStartTrade_pressed"]
