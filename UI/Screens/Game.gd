@@ -41,6 +41,7 @@ var ColorsPlayer = [
 
 onready var PlayerListText = $BottomPanel/HBoxContainer/VBoxContainer2/PlayerListText
 onready var Board = $Board
+onready var BoardField = $Board/Background/BoardField
 onready var CardsListPlayer = $CardsListPlayer
 onready var NewCard = $NewCard
 onready var CuratorNewCard = $CuratorNewCard
@@ -60,19 +61,7 @@ func _ready():
 
 
 func add_player(id):
-	var row_amount = 0
 	var ply = PlayerController.instance()
-
-	PlayerListText.bbcode_text = "[center]Игроки:\n"
-	
-	for player in Lobby.player_info:
-		PlayerListText.bbcode_text += "[color="+ColorsPlayer[Lobby.player_info[player].position_list] + "]" + Lobby.player_info[player].name + "[/color] "
-		row_amount += 1
-
-		if(row_amount == 2):
-			PlayerListText.bbcode_text += "\n"
-			row_amount = 0
-	PlayerListText.bbcode_text += "[/center]"
 
 	ply.name = str(id)
 	Lobby.player_info[id].obj = ply
@@ -83,6 +72,33 @@ func add_player(id):
 	ChangeScreen.add_player(id)
 
 	return ply
+	
+	
+# Обновляет графический список игроков
+func refresh_playerlist():
+	PlayerListText.bbcode_text = "[center]Игроки:\n"
+	var row_amount = 0
+	
+	var AlphaPos : int
+	# Проверяем версию движка, т.к. в 3 версии альфа-канал перед RGB, а в 4 - после
+	if Engine.get_version_info().hex >= 0x040000:
+		AlphaPos = 6
+	else:
+		AlphaPos = 1
+		
+	for player in Lobby.player_info:
+		var Alpha = "ff"
+		# На стороне сервера вышедшие игроки не пропадают из списка, а становятся полупрозрачными
+		if (get_tree().is_network_server() and Lobby.player_ids.find(player) == -1):
+			Alpha = "60"
+		PlayerListText.bbcode_text += "[color="+ ColorsPlayer[Lobby.player_info[player].position_list].insert(AlphaPos, Alpha) + "]" + Lobby.player_info[player].name + "[/color] "
+		row_amount += 1
+
+		if(row_amount == 2):
+			PlayerListText.bbcode_text += "\n"
+			row_amount = 0
+	PlayerListText.bbcode_text += "[/center]"
+	return
 
 
 # Ставит игрока на конкретное поле на доске

@@ -8,6 +8,7 @@ onready var Game = $Game
 onready var MainMenu = $MainMenu
 
 
+
 # Состояние игры, если активно значит игроки обсуждают ход и сделать новый нельзя.
 master var bDiscussion : bool = false
 # Игрок делающий ход сейчас.
@@ -73,9 +74,16 @@ master func _player_want_to_move():
 
 	if(Lobby.player_ids[PlayerNow] == get_tree().get_rpc_sender_id()):
 		_next_player()
-		var moves = rand_range(1, 6)
+		var id = get_tree().get_rpc_sender_id()
+		# Генерируем случайное целое число между 1 и 6
+		var moves = 1 + randi() % 6
+		# Если попадаем на "Засада", то с вероятностью 50% генерируем новое число
+		if (Game.Board.get_field(Lobby.player_info[id].position + moves).Type == Game.BoardField.ETypeBoard.TRAP \
+			and randi() % 2 == 1):
+			moves = 1 + randi() % 6
+			
 		Game.increment_player_position(get_tree().get_rpc_sender_id(), moves)
-		rpc("_make_move", get_tree().get_rpc_sender_id(), Lobby.player_info[get_tree().get_rpc_sender_id()].position, moves)
+		rpc("_make_move", get_tree().get_rpc_sender_id(), Lobby.player_info[id].position, moves)
 
 
 master func _player_want_to_trade(card_name):
@@ -187,6 +195,7 @@ func _on_connected_to_server():
 
 func _on_player_released(id):
 	Game.add_player(id)
+	Game.refresh_playerlist()
 
 	if(Lobby.player_info[id].position == -1):
 		Lobby.player_info[id].position = Game.PositionSections[Lobby.start_section][0]
@@ -205,6 +214,7 @@ func _on_player_released(id):
 func _on_player_re_released(id):
 	if(Lobby.player_info[id].obj == null):
 		Game.add_player(id)
+		Game.refresh_playerlist()
 	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Lobby.player_info[id].position)
 	if(get_tree().is_network_server()):
 		if(PlayerNow == NO_BODY_GO):
@@ -256,12 +266,13 @@ func _on_player_want_to_set_pos(new_pos):
 
 func _on_player_disconnected(id):
 	var DeletedPlayer: int = Lobby.player_ids.find(id)
-
-
+	
 	if(DeletedPlayer == -1 or (not get_tree().is_network_server()) ):
+		Game.refresh_playerlist()
 		return
 
 	Lobby.player_ids.erase(id)
+	Game.refresh_playerlist()
 
 	if(PlayerNow == DeletedPlayer):
 		PlayerNow = 0
