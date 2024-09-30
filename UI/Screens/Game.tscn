@@ -1246,12 +1246,13 @@ margin_left = 38.0
 margin_top = 1006.5
 margin_right = 168.0
 margin_bottom = 1135.5
+Type = 8
 
 [node name="BoardField113" parent="Board/Background" instance=ExtResource( 4 )]
-margin_left = 38.0
-margin_top = 1006.5
-margin_right = 168.0
-margin_bottom = 1135.5
+margin_left = -112.0
+margin_top = 1007.0
+margin_right = 18.0
+margin_bottom = 1136.0
 
 [node name="BoardField115" parent="Board/Background" instance=ExtResource( 4 )]
 margin_left = -435.0

@@ -55,6 +55,8 @@ func _ready():
 	ChangeScreen.connect("on_stop_trade_card", self, "_on_stop_trade_card")
 	ChangeScreen.connect("on_make_trade", self, "_on_make_trade")
 	Board.connect("completed_move", self, "_on_completed_move_on_board")
+	#Если нажать на карту, то она пропадёт
+	NewCard.get_child(1).connect("pressed", self, "hide_new_card_to_player")
 	
 	for board in range(1, 113):
 		Board.get_field(board).connect("on_pressed", self, "_on_pressed_on_board", [Board.get_field(board).get_board_position()])
@@ -230,6 +232,7 @@ func show_new_card_to_player():
 
 func hide_new_card_to_player():
 	NewCard.hide()
+	NewCard.get_child(0).text = "N/A"
 
 
 func show_amount_moves(moves):
