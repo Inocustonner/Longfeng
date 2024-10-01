@@ -115,15 +115,9 @@ margin_right = 974.0
 margin_bottom = 712.0
 texture = ExtResource( 4 )
 
-[node name="ButtonStartTrade" type="Button" parent="."]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -456.0
-margin_top = -59.0
-margin_right = -306.0
-margin_bottom = -8.0
+[node name="ButtonStartTrade" type="Button" parent="ButtonStartBackrgound"]
+margin_right = 150.0
+margin_bottom = 51.0
 rect_min_size = Vector2( 150, 51 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
@@ -142,15 +136,7 @@ margin_right = 1156.0
 margin_bottom = 712.0
 texture = ExtResource( 4 )
 
-[node name="ButtonMakeTrade" type="Button" parent="."]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -274.0
-margin_top = -59.0
-margin_right = -124.0
-margin_bottom = -8.0
+[node name="ButtonMakeTrade" type="Button" parent="ButtonMakeBackrgound2"]
 rect_min_size = Vector2( 150, 51 )
 focus_mode = 0
 mouse_default_cursor_shape = 2
@@ -173,5 +159,5 @@ margin_right = -490.0
 margin_bottom = -11.0
 texture = ExtResource( 3 )
 
-[connection signal="pressed" from="ButtonStartTrade" to="." method="_on_ButtonStartTrade_pressed"]
-[connection signal="pressed" from="ButtonMakeTrade" to="." method="_on_ButtonMakeTrade_pressed"]
+[connection signal="pressed" from="ButtonStartBackrgound/ButtonStartTrade" to="." method="_on_ButtonStartTrade_pressed"]
+[connection signal="pressed" from="ButtonMakeBackrgound2/ButtonMakeTrade" to="." method="_on_ButtonMakeTrade_pressed"]
