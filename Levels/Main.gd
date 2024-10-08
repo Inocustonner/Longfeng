@@ -312,7 +312,7 @@ func _on_player_disconnected(id):
 	Game.refresh_playerlist()
 
 	if(PlayerNow == DeletedPlayer):
-#		PlayerNow = 0
+		PlayerNow -= 1
 		_next_player()
 		bDiscussion = false
 		if (Lobby.player_ids.size() > 0 and PlayerNow != NO_BODY_GO):
