@@ -266,7 +266,7 @@ func _on_player_end_playing(playerid):
 	Lobby.player_info[playerid].is_end_game = true
 	Game.add_card_to_player(playerid)
 	#rpc_id(playerid, "_player_stop_game")
-	_on_players_ended_discussion()
+	#_on_players_ended_discussion()
 
 
 func _on_player_want_move():
