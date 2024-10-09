@@ -32,6 +32,7 @@ func show_screen(bShow, main_trader, type_tradeing):
 	if(bShow):
 		MainTraderId = main_trader
 		load_all_player_cards(get_tree().get_network_unique_id(), type_tradeing)
+		load_player_list()
 		show()
 	else:
 		for n in OpponentChoicedCard.get_children():
@@ -51,17 +52,29 @@ func show_screen(bShow, main_trader, type_tradeing):
 		hide()
 
 
-func add_player(id):
-	if(id == get_tree().get_network_unique_id()):
-		return
+func load_player_list():
+	for n in PlayerList.get_children():
+		PlayerList.remove_child(n)
+		n.queue_free()
+	
+	var own_id = get_tree().get_network_unique_id()
+	
+	for id in Lobby.player_info.keys():
+		if id == own_id:
+			continue
 
-	var lot = _player_lot_scene.instance()
+		var lot = _player_lot_scene.instance()
 
-	lot.name = str(id)
-	lot.set_nickname(Lobby.player_info[id].name)
-	lot.connect("on_player_lot_pressed", self, "_on_player_lot_pressed")
-	PlayerList.add_child(lot)
+		lot.name = str(id)
+		lot.set_nickname(Lobby.player_info[id].name)
+		lot.connect("on_player_lot_pressed", self, "_on_player_lot_pressed")
+		PlayerList.add_child(lot)
 
+func remove_player_from_playerlist(id):
+	var pl = PlayerList.get_node(str(id))
+	if(pl):
+		PlayerList.remove_child(pl)
+		pl.queue_free()
 
 func set_active_player(id, bActive):
 	var pl = PlayerList.get_node(str(id))

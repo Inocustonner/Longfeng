@@ -71,7 +71,6 @@ func add_player(id):
 	ply.set_nickname(Lobby.player_info[id].name)
 	ply.set_background(Lobby.player_info[id].position_list)
 
-	ChangeScreen.add_player(id)
 
 	return ply
 	

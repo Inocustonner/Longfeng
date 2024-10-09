@@ -303,6 +303,7 @@ func _on_player_disconnected(id):
 	
 	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):	
 		Game.refresh_playerlist()
+		Game.ChangeScreen.remove_player_from_playerlist(id)
 		return
 
 	Lobby.player_ids.erase(id)
