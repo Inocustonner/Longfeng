@@ -141,6 +141,8 @@ master func _player_maked_trade(ChooisedPlayerId):
 	
 	rpc("_show_to_players_change_screen", false, 0, 0)
 	_on_players_ended_discussion()
+	MainTraderId = 0
+	
 
 
 master func _move_player_to_him_pos(new_pos):
@@ -301,23 +303,26 @@ func _on_player_disconnected(id):
 	
 	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):	
 		Game.refresh_playerlist()
-		
-		#Если происходит обмен и остаётся менее двух игроков или игру покидает MainTraider, то закрываем экран обмена
-		if (Game.ChangeScreen.MainTraderId != 0):
-			if (Lobby.player_info.size() < 2 or id == Game.ChangeScreen.MainTraderId):
-				Game.show_change_screen_to_player(false, 0, 0)
 		return
 
 	Lobby.player_ids.erase(id)
 	Game.refresh_playerlist()
+	
+	#Если происходит обмен и остаётся менее двух игроков или игру покидает MainTraider, то закрываем экран обмена
+	if (MainTraderId != 0):
+		if (Lobby.player_ids.size() < 2 or id == MainTraderId):
+			rpc("_show_to_players_change_screen", false, 0, 0)
+			_on_players_ended_discussion()
+			MainTraderId  = 0
 
 	if(PlayerNow == DeletedPlayer):
 		PlayerNow -= 1
 		_next_player()
 		bDiscussion = false
-		if (Lobby.player_ids.size() > 0 and PlayerNow != NO_BODY_GO):
+		if (Lobby.player_ids.size() > 0 and PlayerNow != NO_BODY_GO and MainTraderId == 0):
 			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
 	elif(PlayerNow > DeletedPlayer):
 		PlayerNow -= 1
 		assert(PlayerNow >= 0)
-		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+		if (MainTraderId == 0):
+			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
