@@ -231,8 +231,9 @@ func show_new_card_to_player():
 	NewCard.get_child(0).text = Lobby.player_info[get_tree().get_network_unique_id()].cards[len(Lobby.player_info[get_tree().get_network_unique_id()].cards) - 1].Name
 
 func hide_new_card_to_player():
-	NewCard.hide()
-	NewCard.get_child(0).text = "N/A"
+	if (NewCard.visible) :
+		NewCard.hide()
+		NewCard.get_child(0).text = "N/A"
 
 
 func show_amount_moves(moves):
