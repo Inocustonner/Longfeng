@@ -262,11 +262,8 @@ func _on_players_ended_discussion():
 	
 	var prev_player_id = _get_prev_player_id()
 	if prev_player_id != -1:
-		rpc_id(int(_get_prev_player_id()), "_hide_new_card")
-	
-	for i in range(Lobby.player_ids.size()):
-		if (i != PlayerNow):
-			rpc_id(int(Lobby.player_ids[i]), "_let_player_make_move", false)
+		rpc_id(int(prev_player_id), "_hide_new_card")
+		rpc_id(int(prev_player_id), "_let_player_make_move", false)
 
 	if (PlayerNow != NO_BODY_GO):
 		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
@@ -275,6 +272,7 @@ func _on_players_ended_discussion():
 func _on_player_end_playing(playerid):
 	Lobby.player_info[playerid].is_end_game = true
 	Game.add_card_to_player(playerid)
+	rpc_id(playerid, "_let_player_make_move", false)
 	#rpc_id(playerid, "_player_stop_game")
 	#_on_players_ended_discussion()
 
