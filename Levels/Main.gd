@@ -53,7 +53,8 @@ func _next_player():
 	PlayerNow += 1
 	if(PlayerNow > len(Lobby.player_ids) - 1):
 		PlayerNow = 0
-
+	
+	# Пропускаем тех, кто окончил игру
 	while Lobby.player_info[Lobby.player_ids[PlayerNow]].is_end_game == true:
 		PlayerNow += 1
 		if(PlayerNow > len(Lobby.player_ids) - 1):

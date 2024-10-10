@@ -53,12 +53,15 @@ func show_screen(bShow, main_trader, type_tradeing):
 
 
 func load_player_list():
+	# Предварительно очищаем список игроков
 	for n in PlayerList.get_children():
 		PlayerList.remove_child(n)
 		n.queue_free()
 	
 	var own_id = get_tree().get_network_unique_id()
 	
+	# Инициализируем список игроков, доступных для обмена, из игроков в текущем лобби
+	# Вновь зашедшие игроки не появятся в списке происходящего обмена
 	for id in Lobby.player_info.keys():
 		if id == own_id:
 			continue
@@ -70,6 +73,7 @@ func load_player_list():
 		lot.connect("on_player_lot_pressed", self, "_on_player_lot_pressed")
 		PlayerList.add_child(lot)
 
+# Удаляет игрока из списка игроков
 func remove_player_from_playerlist(id):
 	var pl = PlayerList.get_node(str(id))
 	if(pl):
