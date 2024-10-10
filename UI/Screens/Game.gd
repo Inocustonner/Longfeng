@@ -55,6 +55,8 @@ func _ready():
 	ChangeScreen.connect("on_stop_trade_card", self, "_on_stop_trade_card")
 	ChangeScreen.connect("on_make_trade", self, "_on_make_trade")
 	Board.connect("completed_move", self, "_on_completed_move_on_board")
+	#Если нажать на карту, то она пропадёт
+	NewCard.get_child(1).connect("pressed", self, "hide_new_card_to_player")
 	
 	for board in range(1, 113):
 		Board.get_field(board).connect("on_pressed", self, "_on_pressed_on_board", [Board.get_field(board).get_board_position()])
@@ -69,7 +71,6 @@ func add_player(id):
 	ply.set_nickname(Lobby.player_info[id].name)
 	ply.set_background(Lobby.player_info[id].position_list)
 
-	ChangeScreen.add_player(id)
 
 	return ply
 	
@@ -229,7 +230,10 @@ func show_new_card_to_player():
 	NewCard.get_child(0).text = Lobby.player_info[get_tree().get_network_unique_id()].cards[len(Lobby.player_info[get_tree().get_network_unique_id()].cards) - 1].Name
 
 func hide_new_card_to_player():
-	NewCard.hide()
+	# Если игрок ещё не дошел до клетки, но обсуждение уже окончено, то он все равно увидит карту
+	if (NewCard.visible) :
+		NewCard.hide()
+		NewCard.get_child(0).text = "N/A"
 
 
 func show_amount_moves(moves):
