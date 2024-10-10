@@ -74,14 +74,7 @@ slave func _on_unregister_player(id):
 # Запрашивает информацию о всех игроках у сервера
 master func _get_info_all_players():
 	rpc_id(get_tree().get_rpc_sender_id(), "_release_all_players", player_info, player_ids)
-
-
-# Записывате игрок обратно в существующиего плеера
-remote func _re_release_player(id, info, start_sec):
-	player_info[id] = info
-	start_section = start_sec
-	emit_signal("on_player_re_released", id)
-
+	
 
 # Записывает игрока в общий список игроков
 remotesync func _release_player(id, info, start_sec):
