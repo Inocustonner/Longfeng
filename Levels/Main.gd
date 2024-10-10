@@ -78,7 +78,8 @@ func _get_prev_player_id():
 		i -= 1
 	
 	if(bAllEnded):
-		return Lobby.player_ids[i]
+	# Если все закончили игру, то предыдущего игрока нет
+		return -1
 	# Пропускаем тех, кто окончил игру по аналогии с _next_player()
 	while Lobby.player_info[Lobby.player_ids[i]].is_end_game == true:
 		i =- 1
@@ -257,7 +258,11 @@ func _on_players_started_discussion():
 
 func _on_players_ended_discussion():
 	bDiscussion = false
-	rpc_id(int(_get_prev_player_id()), "_hide_new_card")
+	
+	var prev_player_id = _get_prev_player_id()
+	if prev_player_id != -1:
+		rpc_id(int(_get_prev_player_id()), "_hide_new_card")
+	
 	rpc("_let_player_make_move", false)
 	
 	if (PlayerNow != NO_BODY_GO):
