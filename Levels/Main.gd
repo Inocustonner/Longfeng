@@ -83,7 +83,7 @@ func _get_prev_player_id():
 		return -1
 	# Пропускаем тех, кто окончил игру по аналогии с _next_player()
 	while Lobby.player_info[Lobby.player_ids[i]].is_end_game == true:
-		i =- 1
+		i -= 1
 		if(i < 0):
 			i = len(Lobby.player_ids) - 1
 			
