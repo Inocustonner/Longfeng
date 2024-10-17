@@ -43,15 +43,18 @@ func _next_player():
 			break
 
 	if(bAllEnded):
+		PlayerNow = NO_BODY_GO
 		return
 
 	if(len(Lobby.player_ids) == 1):
+		PlayerNow = 0
 		return
 	
 	PlayerNow += 1
 	if(PlayerNow > len(Lobby.player_ids) - 1):
 		PlayerNow = 0
-
+	
+	# Пропускаем тех, кто окончил игру
 	while Lobby.player_info[Lobby.player_ids[PlayerNow]].is_end_game == true:
 		PlayerNow += 1
 		if(PlayerNow > len(Lobby.player_ids) - 1):
@@ -59,10 +62,32 @@ func _next_player():
 
 
 func _get_prev_player_id():
-	if(PlayerNow == 0):
-		return Lobby.player_ids[len(Lobby.player_ids) - 1]
+	if(len(Lobby.player_ids) == 1):
+		return Lobby.player_ids[PlayerNow]
+	
+	var bAllEnded = true
+
+	for id in Lobby.player_ids:
+		if (Lobby.player_info[id].is_end_game == false):
+			bAllEnded = false
+			break
+			
+	var i = PlayerNow
+	if(i == 0):
+		i = len(Lobby.player_ids) - 1
 	else:
-		return Lobby.player_ids[PlayerNow - 1]
+		i -= 1
+	
+	if(bAllEnded):
+	# Если все закончили игру, то предыдущего игрока нет
+		return -1
+	# Пропускаем тех, кто окончил игру по аналогии с _next_player()
+	while Lobby.player_info[Lobby.player_ids[i]].is_end_game == true:
+		i -= 1
+		if(i < 0):
+			i = len(Lobby.player_ids) - 1
+			
+	return Lobby.player_ids[i]
 
 
 master func _player_want_to_move():
@@ -73,17 +98,21 @@ master func _player_want_to_move():
 		return
 
 	if(Lobby.player_ids[PlayerNow] == get_tree().get_rpc_sender_id()):
-		_next_player()
 		var id = get_tree().get_rpc_sender_id()
 		# Генерируем случайное целое число между 1 и 6
 		var moves = 1 + randi() % 6
+		var FieldType = Game.Board.get_field(Lobby.player_info[id].position + moves).Type
 		# Если попадаем на "Засада", то с вероятностью 50% генерируем новое число
-		if (Game.Board.get_field(Lobby.player_info[id].position + moves).Type == Game.BoardField.ETypeBoard.TRAP \
+		if (FieldType == Game.BoardField.ETypeBoard.TRAP \
 			and randi() % 2 == 1):
 			moves = 1 + randi() % 6
+		# Если попадаем на "Финиш" или выходим за доску, то вычисляем точное расстояние до клетки, чтобы избежать ошибок
+		if (FieldType == Game.BoardField.ETypeBoard.FINISH):
+			moves = Game.Board.BoardFields.get_child_count() - 1 - Lobby.player_info[id].position
 			
 		Game.increment_player_position(get_tree().get_rpc_sender_id(), moves)
 		rpc("_make_move", get_tree().get_rpc_sender_id(), Lobby.player_info[id].position, moves)
+		_next_player()
 
 
 master func _player_want_to_trade(card_name):
@@ -114,6 +143,8 @@ master func _player_maked_trade(ChooisedPlayerId):
 	
 	rpc("_show_to_players_change_screen", false, 0, 0)
 	_on_players_ended_discussion()
+	MainTraderId = 0
+	
 
 
 master func _move_player_to_him_pos(new_pos):
@@ -207,7 +238,7 @@ func _on_player_released(id):
 
 	if(get_tree().is_network_server()):
 		if(PlayerNow == NO_BODY_GO):
-			PlayerNow = 0
+			_next_player()
 		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
 
 
@@ -218,7 +249,7 @@ func _on_player_re_released(id):
 	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Lobby.player_info[id].position)
 	if(get_tree().is_network_server()):
 		if(PlayerNow == NO_BODY_GO):
-			PlayerNow = 0
+			_next_player()
 		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
 
 
@@ -228,16 +259,22 @@ func _on_players_started_discussion():
 
 func _on_players_ended_discussion():
 	bDiscussion = false
-	rpc_id(int(_get_prev_player_id()), "_hide_new_card")
-	rpc_id(int(_get_prev_player_id()), "_let_player_make_move", false)
-	rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+	
+	var prev_player_id = _get_prev_player_id()
+	if prev_player_id != -1:
+		rpc_id(int(prev_player_id), "_hide_new_card")
+		rpc_id(int(prev_player_id), "_let_player_make_move", false)
+
+	if (PlayerNow != NO_BODY_GO):
+		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
 
 
 func _on_player_end_playing(playerid):
 	Lobby.player_info[playerid].is_end_game = true
 	Game.add_card_to_player(playerid)
+	rpc_id(playerid, "_let_player_make_move", false)
 	#rpc_id(playerid, "_player_stop_game")
-	_on_players_ended_discussion()
+	#_on_players_ended_discussion()
 
 
 func _on_player_want_move():
@@ -245,6 +282,9 @@ func _on_player_want_move():
 
 
 master func _on_started_trading_between_players(main_trader, type_tradeing):
+	#Если на арене меньше двух игроков, то обмена не происходит
+	if(Lobby.player_ids.size() < 2):
+		return
 	MainTraderId = main_trader
 	rpc("_show_to_players_change_screen", true, main_trader, type_tradeing)
 
@@ -267,18 +307,29 @@ func _on_player_want_to_set_pos(new_pos):
 func _on_player_disconnected(id):
 	var DeletedPlayer: int = Lobby.player_ids.find(id)
 	
-	if(DeletedPlayer == -1 or (not get_tree().is_network_server()) ):
+	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):	
 		Game.refresh_playerlist()
+		Game.ChangeScreen.remove_player_from_playerlist(id)
 		return
 
 	Lobby.player_ids.erase(id)
 	Game.refresh_playerlist()
+	
+	#Если происходит обмен и остаётся менее двух игроков или игру покидает MainTraider, то закрываем экран обмена
+	if (MainTraderId != 0):
+		if (Lobby.player_ids.size() < 2 or id == MainTraderId):
+			rpc("_show_to_players_change_screen", false, 0, 0)
+			_on_players_ended_discussion()
+			MainTraderId  = 0
 
 	if(PlayerNow == DeletedPlayer):
-		PlayerNow = 0
+		PlayerNow -= 1
+		_next_player()
 		bDiscussion = false
-		if (Lobby.player_ids.size() > 0):
+		if (Lobby.player_ids.size() > 0 and PlayerNow != NO_BODY_GO and MainTraderId == 0):
 			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
 	elif(PlayerNow > DeletedPlayer):
 		PlayerNow -= 1
 		assert(PlayerNow >= 0)
+		if (MainTraderId == 0):
+			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)

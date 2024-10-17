@@ -51,7 +51,11 @@ func set_player_to_board(player, position):
 		_moving_players[player][2] = true
 
 func get_field(position):
-	return BoardFields.get_child(position+SHIFT_POSITON)
+	position += SHIFT_POSITON
+	var max_pos = BoardFields.get_child_count() - 1;
+	if (position > max_pos):
+		position = max_pos
+	return BoardFields.get_child(position)
 
 func _update_players_boards():
 	for player in _moving_players:
