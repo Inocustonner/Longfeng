@@ -242,17 +242,6 @@ func _on_player_released(id):
 		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
 
 
-func _on_player_re_released(id):
-	if(Lobby.player_info[id].obj == null):
-		Game.add_player(id)
-		Game.refresh_playerlist()
-	Game.Board.set_player_to_actual_position(Lobby.player_info[id].obj, Lobby.player_info[id].position)
-	if(get_tree().is_network_server()):
-		if(PlayerNow == NO_BODY_GO):
-			_next_player()
-		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
-
-
 func _on_players_started_discussion():
 	bDiscussion = true
 
