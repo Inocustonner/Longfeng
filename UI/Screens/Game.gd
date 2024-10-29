@@ -39,7 +39,11 @@ var ColorsPlayer = [
 	"#0a8754", "#535353", "#16c612"
 ]
 
+#Загружаем код MainMenu
+const MainMenu = preload("MainMenu.gd")
+
 onready var PlayerListText = $BottomPanel/HBoxContainer/VBoxContainer2/PlayerListText
+onready var CardListButton = $BottomPanel/HBoxContainer/Button
 onready var Board = $Board
 onready var BoardField = $Board/Background/BoardField
 onready var CardsListPlayer = $CardsListPlayer
@@ -57,6 +61,10 @@ func _ready():
 	Board.connect("completed_move", self, "_on_completed_move_on_board")
 	#Если нажать на карту, то она пропадёт
 	NewCard.get_child(1).connect("pressed", self, "hide_new_card_to_player")
+	
+	#Если версия серверная, то убираем кнопку "Ваши карточки"
+	if (MainMenu.SERVER_VERSION):
+		CardListButton.hide()
 	
 	for board in range(1, 113):
 		Board.get_field(board).connect("on_pressed", self, "_on_pressed_on_board", [Board.get_field(board).get_board_position()])
