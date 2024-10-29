@@ -286,8 +286,16 @@ func update_player_trades(playerid, card_name):
 
 func _show_to_currator_new_card(name_card, desc):
 	CuratorNewCard.get_child(1).disabled = true
+	var card_desc_panel = CuratorNewCard.get_child(2)
+	var card_desc_label = CuratorNewCard.get_child(2).get_child(0).get_child(0)
 	CuratorNewCard.get_child(0).get_child(0).text = name_card
-	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = desc
+#Если у карты есть описание, то показываем ее, иначе скрываем элемент с экрана
+	if desc.length() > 0:
+		card_desc_label.text = desc
+		card_desc_panel.visible = true
+	else:
+		card_desc_panel.visible = false
+		
 	CuratorNewCard.show()
 
 	var timer := Timer.new()
