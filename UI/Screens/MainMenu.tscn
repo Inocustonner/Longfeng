@@ -146,7 +146,7 @@ custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 3 )
 custom_styles/focus = SubResource( 4 )
 custom_styles/normal = SubResource( 5 )
-text = "192.168.1.56"
+text = "localhost"
 align = 1
 
 [node name="HBoxContainer5" type="HBoxContainer" parent="CenterPanel/VBoxContainer"]
