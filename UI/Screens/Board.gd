@@ -31,8 +31,13 @@ func _ready():
 	PlayersTimer.start()
 
 func set_player_to_actual_position(player, position):
+	#Проверяем не удалён ли объект игрока
+	if (is_instance_valid(player) == false):
+		return
+	
 	if(not player in _moving_players):
 		_moving_players[player] = [position, position, false]
+
 	if(player.get_parent() != null):
 		player.get_parent().remove_child(player)
 		
@@ -68,6 +73,8 @@ func _update_players_boards():
 		else:
 			if(_moving_players[player][2] == true):
 				_moving_players[player][2] = false
-				if(int(player.name) == get_tree().get_network_unique_id()):
-					emit_signal("completed_move")
+				#Проверяем не удалён ли объект игрока
+				if (is_instance_valid(player)):
+					if(int(player.name) == get_tree().get_network_unique_id()):
+						emit_signal("completed_move")
 			continue

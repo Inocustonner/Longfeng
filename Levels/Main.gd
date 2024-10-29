@@ -304,6 +304,9 @@ func _on_player_disconnected(id):
 	Lobby.player_ids.erase(id)
 	Game.refresh_playerlist()
 	
+	#Удаляем игрока из списка движущихся
+	Game.Board._moving_players.erase(id)
+	
 	#Если происходит обмен и остаётся менее двух игроков или игру покидает MainTraider, то закрываем экран обмена
 	if (MainTraderId != 0):
 		if (Lobby.player_ids.size() < 2 or id == MainTraderId):
