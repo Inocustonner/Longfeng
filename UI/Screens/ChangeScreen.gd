@@ -15,6 +15,7 @@ onready var CardsList = $CardsListPanel/ScrollContainer/GridContainer
 onready var PlaceYourChoicedCard = $YourChoicedCardPanel
 onready var OpponentChoicedCard = $OpponentChoicedCardPanel2
 onready var IndicatorTrading = $IndicatorTrading
+onready var MakeChangeBGButton = $ButtonMakeBackrgound2
 
 
 var bTrading = false
@@ -33,6 +34,7 @@ func show_screen(bShow, main_trader, type_tradeing):
 		MainTraderId = main_trader
 		load_all_player_cards(get_tree().get_network_unique_id(), type_tradeing)
 		load_player_list()
+		setup_make_change_button(main_trader)
 		show()
 	else:
 		for n in OpponentChoicedCard.get_children():
@@ -50,6 +52,14 @@ func show_screen(bShow, main_trader, type_tradeing):
 		MainTraderId = 0
 		bTrading = false
 		hide()
+
+
+#Устанавливает видимость кнопки "Обменять"
+func setup_make_change_button(main_trader):
+	if (get_tree().get_network_unique_id() != main_trader):
+		MakeChangeBGButton.hide()
+	else:
+		MakeChangeBGButton.show()
 
 
 func load_player_list():
