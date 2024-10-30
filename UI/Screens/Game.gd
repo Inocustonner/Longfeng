@@ -97,14 +97,26 @@ func refresh_playerlist():
 		AlphaPos = 1
 		
 	for player in Lobby.player_info:
+		var Name = Lobby.player_info[player].name
+		var NameColor = ColorsPlayer[Lobby.player_info[player].position_list]
 		var Alpha = "ff"
 		# На стороне сервера вышедшие игроки не пропадают из списка, а становятся полупрозрачными
 		if (get_tree().is_network_server() and Lobby.player_ids.find(player) == -1):
 			Alpha = "60"
-		PlayerListText.bbcode_text += "[color="+ ColorsPlayer[Lobby.player_info[player].position_list].insert(AlphaPos, Alpha) + "]" + Lobby.player_info[player].name + "[/color] "
+		
+		# Добавляем в список никнейм с цветом, присвоенным игроку
+		PlayerListText.bbcode_text += "[color="+ NameColor.insert(AlphaPos, Alpha) + "]" + Name + "[/color] "
 		row_amount += 1
-
-		if(row_amount == 2):
+		
+		# На стороне клиента добавляем подпись "(Вы)" к никнейму текущего клиента
+		if (not get_tree().is_network_server() and player == get_tree().get_network_unique_id()):
+			PlayerListText.bbcode_text += "(Вы)"
+			# Делаем перенос строки после ника текущего клиента (Ради красоты)
+			if (row_amount == 1):
+				row_amount += 1
+		
+		# Каждые 2 ника в списке делаем перенос строки
+		if(row_amount % 2 == 0):
 			PlayerListText.bbcode_text += "\n"
 			row_amount = 0
 	PlayerListText.bbcode_text += "[/center]"
