@@ -159,7 +159,8 @@ remotesync func _ALL_move_player_to_him_pos(playerid, new_pos):
 remotesync func _make_move(playerid, position, moves):
 	if(get_tree().get_network_unique_id() == playerid):
 		Game.show_amount_moves(moves)
-	
+		Game.hide_make_move_button()
+			
 	Game.set_player_position(playerid, position)
 
 

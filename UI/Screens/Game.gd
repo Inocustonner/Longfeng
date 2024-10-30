@@ -49,7 +49,8 @@ onready var BoardField = $Board/Background/BoardField
 onready var CardsListPlayer = $CardsListPlayer
 onready var NewCard = $NewCard
 onready var CuratorNewCard = $CuratorNewCard
-onready var IndicatorMove = $BottomPanel/HBoxContainer/VBoxContainer
+onready var IndicatorMoveBox = $BottomPanel/HBoxContainer/VBoxContainer
+onready var MakeMoveButton = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer2/Button
 onready var ChangeScreen = $ChangeScreen
 onready var CloseCardsButton = $CloseCardsButton
 
@@ -227,8 +228,8 @@ remote func _show_card_to_player(card_name):
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
 	NewCard.get_child(0).text = "N/A"
-	IndicatorMove.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
-	IndicatorMove.get_child(1).hide()
+	IndicatorMoveBox.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
+	IndicatorMoveBox.get_child(1).hide()
 
 	for board in range(1, 113):
 		Board.get_field(board).active_button(true)
@@ -245,7 +246,7 @@ func hide_new_card_to_player():
 
 
 func show_amount_moves(moves):
-	IndicatorMove.get_child(1).get_child(0).texture = SpritesDice[moves]
+	IndicatorMoveBox.get_child(1).get_child(0).texture = SpritesDice[moves]
 
 	var timer := Timer.new()
 	add_child(timer)
@@ -256,7 +257,18 @@ func show_amount_moves(moves):
 
 
 func _hide_amount_moves():
-	IndicatorMove.get_child(1).get_child(0).texture = SpritesDice[0]
+	IndicatorMoveBox.get_child(1).get_child(0).texture = SpritesDice[0]
+	
+
+#Показать кнопку "Бросить кубик"
+func show_make_move_button():
+	#Скрыть кнопку "Бросить кубик"
+	MakeMoveButton.show();
+
+#Скрыть кнопку "Бросить кубик"
+func hide_make_move_button():
+	#Скрыть кнопку "Бросить кубик"
+	MakeMoveButton.hide();
 
 
 # Возвращает номер секции (от 0) в которой находится позиция
@@ -268,15 +280,17 @@ func _get_section_from_position(position):
 
 func let_make_move(bLet : bool):
 	if(bLet):
-		IndicatorMove.get_child(0).get_child(0).text = "Ваш ход!"
-		IndicatorMove.get_child(1).show()
+		IndicatorMoveBox.get_child(0).get_child(0).text = "Ваш ход!"
+		IndicatorMoveBox.get_child(1).show()
+		show_make_move_button()
 	else:
-		IndicatorMove.get_child(0).get_child(0).text = "Сейчас ходите не вы!"
-		IndicatorMove.get_child(1).hide()
+		IndicatorMoveBox.get_child(0).get_child(0).text = "Сейчас ходите не вы!"
+		IndicatorMoveBox.get_child(1).hide()
+		hide_make_move_button()
 
 
 func hide_button_move():
-	IndicatorMove.hide()
+	IndicatorMoveBox.hide()
 
 
 func show_change_screen_to_player(bShow, main_trader, type_tradeing):
