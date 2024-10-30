@@ -50,6 +50,7 @@ onready var CardsListPlayer = $CardsListPlayer
 onready var NewCard = $NewCard
 onready var CuratorNewCard = $CuratorNewCard
 onready var IndicatorMoveBox = $BottomPanel/HBoxContainer/VBoxContainer
+onready var IndicatorMoveLabel = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer/Label
 onready var MakeMoveButton = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer2/Button
 onready var ChangeScreen = $ChangeScreen
 onready var CloseCardsButton = $CloseCardsButton
@@ -139,7 +140,7 @@ func increment_player_position(id, i: int):
 	if(Lobby.player_info[id].amount_moves >= MAX_MOVES_ON_SECTION):
 		var now_sec = _get_section_from_position(Lobby.player_info[id].position)
 
-		# усовия завершения игры игроком id
+		# условия завершения игры игроком id
 		if(now_sec + 1 == 3):
 			set_player_position(id, PositionSections[2][1])
 			emit_signal("on_player_end_playing", id)
@@ -155,6 +156,8 @@ func increment_player_position(id, i: int):
 		if(Lobby.player_info[id].amount_moves < MAX_MOVES_ON_SECTION):
 			print(str(id) + " : недостаточно ходов, возвращаем в начало!")
 			var now_sec = _get_section_from_position(Lobby.player_info[id].position)
+			# Оповещаем клиентов о том, что для игрока случился откат из-за недостаточного количества ходов
+			rpc("_player_rollback", id, Lobby.player_info[id].amount_moves, MAX_MOVES_ON_SECTION)
 			set_player_position(id, PositionSections[now_sec][0] + 1)
 			do_move(id)
 
@@ -236,6 +239,10 @@ remote func add_card_to_player_CLIENT(id, card):
 remote func _show_card_to_player(card_name):
 	NewCard.get_child(0).text = card_name
 
+remote func _player_rollback(id, moves_count, required_count):
+	if (id == get_tree().get_network_unique_id()):
+		IndicatorMoveLabel.text = "Вас откатывает из-за недостаточного количества ходов!\n"
+		IndicatorMoveLabel.text += str(moves_count) + "/" + str(required_count)
 
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
