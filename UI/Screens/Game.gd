@@ -82,7 +82,6 @@ func add_player(id):
 	ply.set_nickname(Lobby.player_info[id].name)
 	ply.set_background(Lobby.player_info[id].position_list)
 
-
 	return ply
 	
 	
@@ -244,6 +243,12 @@ remote func _player_rollback(id, moves_count, required_count):
 	if (id == get_tree().get_network_unique_id()):
 		IndicatorMoveRichLabel.bbcode_text = "Вас откатывает из-за недостаточного количества ходов! "
 		IndicatorMoveRichLabel.bbcode_text += str(moves_count) + "/" + str(required_count)
+		
+remote func _started_discussion():
+	IndicatorMoveRichLabel.bbcode_text = "Происходит обсуждение!"
+	
+remote func _all_players_end_playing():
+	IndicatorMoveRichLabel.bbcode_text = "Все игроки закончили игру!"
 
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
@@ -299,25 +304,49 @@ func _get_section_from_position(position):
 			return i
 
 
-func let_make_move(bLet : bool):
-	if(bLet):
+func let_make_move(player_id):
+	if(player_id == get_tree().get_network_unique_id()):
 		IndicatorMoveRichLabel.bbcode_text = "Ваш ход!"
 		IndicatorMoveBox.get_child(1).show()
 		show_make_move_button()
 	else:
-		IndicatorMoveRichLabel.bbcode_text = "Сейчас ходите не вы!"
+		IndicatorMoveRichLabel.bbcode_text = "Сейчас совершает ход: "
+		# Выводим цветной ник игрока, совершающего ход
+		var Name = Lobby.player_info[player_id].name
+		var NameColor = ColorsPlayer[Lobby.player_info[player_id].position_list]
+		IndicatorMoveRichLabel.bbcode_text += "[color=" + NameColor + "]"
+		IndicatorMoveRichLabel.bbcode_text += Name
+		IndicatorMoveRichLabel.bbcode_text += "[/color]"
 		IndicatorMoveBox.get_child(1).hide()
 		hide_make_move_button()
 
 
 func hide_button_move():
-	IndicatorMoveBox.hide()
-
+	#IndicatorMoveBox.hide()
+	# Т.к. с настоящим коммитом IndicatorMoveRichLabel несёт в себе куда больше уведомлений,
+	# нет никакого смысла в его сокрытии, куратор тоже может следить за информацией об игре.
+	pass
 
 func show_change_screen_to_player(bShow, main_trader, type_tradeing):
+	if(bShow):
+		show_main_traider_name(main_trader)
 	ChangeScreen.show_screen(bShow, main_trader, type_tradeing)
 
-
+# Выводит информацию о MainTraider в IndicatorMoveRichLabel
+func show_main_traider_name(main_trader):
+	# Выводим ник игрока, совершающего обмен
+	if (main_trader == get_tree().get_network_unique_id()):
+		IndicatorMoveRichLabel.bbcode_text = "Вы совершаете обмен!"
+	else:
+		IndicatorMoveRichLabel.bbcode_text = "Сейчас совершает обмен: "
+		# Выводим цветной ник игрока, совершающего ход
+		var Name = Lobby.player_info[main_trader].name
+		var NameColor = ColorsPlayer[Lobby.player_info[main_trader].position_list]
+		IndicatorMoveRichLabel.bbcode_text += "[color=" + NameColor + "]"
+		IndicatorMoveRichLabel.bbcode_text += Name
+		IndicatorMoveRichLabel.bbcode_text += "[/color]"
+		
+	
 # Вкл/Выкл зеленую лампочку для показания желания обмена игрока
 func set_active_for_change_card(id, bActive):
 	ChangeScreen.set_active_player(id, bActive)

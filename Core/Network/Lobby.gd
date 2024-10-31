@@ -93,8 +93,8 @@ remote func _release_all_players(player_info_, player_ids_):
 
 # Подключился игрок. Игрок регистрируется и получает информацию о всех игроках
 func _on_connected_to_server():
-	rpc("_register_player", my_player_info)
 	rpc("_get_info_all_players")
+	rpc("_register_player", my_player_info)
 
 
 # Игрок отключается от сервера
