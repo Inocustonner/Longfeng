@@ -1308,8 +1308,6 @@ margin_right = 1200.0
 margin_bottom = 187.0
 grow_vertical = 0
 rect_min_size = Vector2( 450, 0 )
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
 [node name="RichLabel" type="RichTextLabel" parent="BottomPanel/HBoxContainer/VBoxContainer"]
 margin_right = 450.0
@@ -1319,8 +1317,8 @@ custom_colors/default_color = Color( 0.866667, 0.666667, 0.278431, 1 )
 custom_fonts/mono_font = SubResource( 13 )
 custom_fonts/normal_font = SubResource( 13 )
 bbcode_enabled = true
-bbcode_text = "Сейчас ходите не вы!"
-text = "Сейчас ходите не вы!"
+bbcode_text = "Никто не совершает ход!"
+text = "Никто не совершает ход!"
 fit_content_height = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="BottomPanel/HBoxContainer/VBoxContainer"]
