@@ -148,12 +148,23 @@ master func _player_maked_trade(ChooisedPlayerId):
 
 
 master func _move_player_to_him_pos(new_pos):
+	# Дополнительная проверка на стороне сервера:
+	# Получаем тип выбранной клетки
+	var FieldType = Game.Board.get_field(new_pos).Type
+	# Не позволяем совершить ход на кнопку "Сам себе хозяин",
+	# чтобы не дать возможности игроку совершать ход бесконечно с клетки на клетку
+	if (FieldType == Game.BoardField.ETypeBoard.YOUROWNBOSS):
+		return
+		
+	# Перемещаем игрока на новую позицию и на стороне сервера, и на стороне клиентов
 	rpc("_ALL_move_player_to_him_pos", get_tree().get_rpc_sender_id(), new_pos)
+	# Вызываем метод для обработки новой позиции игрока (Выдачи карточки, обмена и т.п.)
+	Game.do_move(get_tree().get_rpc_sender_id())
 
 
 remotesync func _ALL_move_player_to_him_pos(playerid, new_pos):
 	Game.set_player_position(playerid, new_pos)
-	_on_players_ended_discussion()
+
 
 
 remotesync func _make_move(playerid, position, moves):

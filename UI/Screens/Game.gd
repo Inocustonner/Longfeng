@@ -400,6 +400,16 @@ func _on_CloseCardsButton_pressed():
 
 
 func _on_pressed_on_board(pos):
+	# Получаем тип выбранной клетки
+	var FieldType = Board.get_field(pos).Type
+	# Не позволяем совершить ход на кнопку "Сам себе хозяин",
+	# чтобы не дать возможности игроку совершать ход бесконечно с клетки на клетку
+	if (FieldType == BoardField.ETypeBoard.YOUROWNBOSS):
+		# Выводим текст, предупреждающий игрока
+		IndicatorMoveLabel.text = "Вы не можете совершить перемещение\n"
+		IndicatorMoveLabel.text += "на другую клетку \"Сам себе хозяин\""
+		return
+	
 	emit_signal("on_player_want_to_set_pos", pos)
 	for board in range(1, 113):
 		Board.get_field(board).active_button(false)
