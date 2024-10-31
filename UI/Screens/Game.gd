@@ -50,7 +50,8 @@ onready var CardsListPlayer = $CardsListPlayer
 onready var NewCard = $NewCard
 onready var CuratorNewCard = $CuratorNewCard
 onready var IndicatorMoveBox = $BottomPanel/HBoxContainer/VBoxContainer
-onready var IndicatorMoveLabel = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer/Label
+onready var IndicatorMoveRichLabel = $BottomPanel/HBoxContainer/VBoxContainer/RichLabel
+# MakeMoveButton - Только кнопка без кубика
 onready var MakeMoveButton = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer2/Button
 onready var ChangeScreen = $ChangeScreen
 onready var CloseCardsButton = $CloseCardsButton
@@ -241,14 +242,15 @@ remote func _show_card_to_player(card_name):
 
 remote func _player_rollback(id, moves_count, required_count):
 	if (id == get_tree().get_network_unique_id()):
-		IndicatorMoveLabel.text = "Вас откатывает из-за недостаточного количества ходов!\n"
-		IndicatorMoveLabel.text += str(moves_count) + "/" + str(required_count)
+		IndicatorMoveRichLabel.bbcode_text = "Вас откатывает из-за недостаточного количества ходов! "
+		IndicatorMoveRichLabel.bbcode_text += str(moves_count) + "/" + str(required_count)
 
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
 	NewCard.get_child(0).text = "N/A"
-	IndicatorMoveBox.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
+	IndicatorMoveRichLabel.bbcode_text = "Выберете поле на которое хотите переместиться!"
 	IndicatorMoveBox.get_child(1).hide()
+	
 
 	for board in range(1, 113):
 		Board.get_field(board).active_button(true)
@@ -299,11 +301,11 @@ func _get_section_from_position(position):
 
 func let_make_move(bLet : bool):
 	if(bLet):
-		IndicatorMoveBox.get_child(0).get_child(0).text = "Ваш ход!"
+		IndicatorMoveRichLabel.bbcode_text = "Ваш ход!"
 		IndicatorMoveBox.get_child(1).show()
 		show_make_move_button()
 	else:
-		IndicatorMoveBox.get_child(0).get_child(0).text = "Сейчас ходите не вы!"
+		IndicatorMoveRichLabel.bbcode_text = "Сейчас ходите не вы!"
 		IndicatorMoveBox.get_child(1).hide()
 		hide_make_move_button()
 
@@ -406,8 +408,8 @@ func _on_pressed_on_board(pos):
 	# чтобы не дать возможности игроку совершать ход бесконечно с клетки на клетку
 	if (FieldType == BoardField.ETypeBoard.YOUROWNBOSS):
 		# Выводим текст, предупреждающий игрока
-		IndicatorMoveLabel.text = "Вы не можете совершить перемещение\n"
-		IndicatorMoveLabel.text += "на другую клетку \"Сам себе хозяин\""
+		IndicatorMoveRichLabel.bbcode_text = "Вы не можете совершить перемещение\n"
+		IndicatorMoveRichLabel.bbcode_text += "на другую клетку \"Сам себе хозяин\""
 		return
 	
 	emit_signal("on_player_want_to_set_pos", pos)

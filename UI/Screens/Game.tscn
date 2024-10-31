@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://Art/Sprites/Sprite_Dice.png" type="Texture" id=1]
 [ext_resource path="res://Art/Sprites/Sprite_BoardField_Finish.png" type="Texture" id=2]
@@ -28,7 +28,7 @@ use_mipmaps = true
 use_filter = true
 font_data = ExtResource( 7 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=13]
 size = 32
 use_mipmaps = true
 use_filter = true
@@ -54,7 +54,13 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=13]
+[sub_resource type="DynamicFont" id=14]
+size = 24
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 7 )
+
+[sub_resource type="DynamicFont" id=15]
 size = 24
 use_mipmaps = true
 use_filter = true
@@ -1283,7 +1289,7 @@ alignment = 2
 
 [node name="Button" type="Button" parent="BottomPanel/HBoxContainer"]
 margin_right = 250.0
-margin_bottom = 170.0
+margin_bottom = 187.0
 rect_min_size = Vector2( 250, 0 )
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 2
@@ -1297,32 +1303,31 @@ flat = true
 expand_icon = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="BottomPanel/HBoxContainer"]
-margin_left = 832.0
-margin_right = 1165.0
-margin_bottom = 170.0
+margin_left = 750.0
+margin_right = 1200.0
+margin_bottom = 187.0
+grow_vertical = 0
+rect_min_size = Vector2( 450, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/separation = 40
-alignment = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="BottomPanel/HBoxContainer/VBoxContainer"]
-margin_right = 325.0
-margin_bottom = 38.0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-
-[node name="Label" type="Label" parent="BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer"]
-margin_right = 325.0
-margin_bottom = 38.0
-custom_colors/font_color = Color( 0.866667, 0.666667, 0.278431, 1 )
-custom_fonts/font = SubResource( 4 )
+[node name="RichLabel" type="RichTextLabel" parent="BottomPanel/HBoxContainer/VBoxContainer"]
+margin_right = 450.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 400, 78 )
+custom_colors/default_color = Color( 0.866667, 0.666667, 0.278431, 1 )
+custom_fonts/mono_font = SubResource( 13 )
+custom_fonts/normal_font = SubResource( 13 )
+bbcode_enabled = true
+bbcode_text = "Сейчас ходите не вы!"
 text = "Сейчас ходите не вы!"
+fit_content_height = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="BottomPanel/HBoxContainer/VBoxContainer"]
 visible = false
-margin_top = 86.0
-margin_right = 333.0
-margin_bottom = 170.0
+margin_top = 82.0
+margin_right = 450.0
+margin_bottom = 166.0
 
 [node name="TextureRect" type="TextureRect" parent="BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer2"]
 margin_right = 80.0
@@ -1342,9 +1347,9 @@ custom_styles/normal = SubResource( 6 )
 text = "Бросить кубик"
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="BottomPanel/HBoxContainer"]
-margin_left = 1665.0
-margin_right = 1840.0
-margin_bottom = 170.0
+margin_left = 1700.0
+margin_right = 1875.0
+margin_bottom = 187.0
 custom_constants/separation = -60
 
 [node name="TextureRect" type="TextureRect" parent="BottomPanel/HBoxContainer/VBoxContainer2"]
@@ -1355,16 +1360,24 @@ texture = ExtResource( 20 )
 [node name="PlayerListText" type="RichTextLabel" parent="BottomPanel/HBoxContainer/VBoxContainer2"]
 margin_top = 77.0
 margin_right = 175.0
-margin_bottom = 137.0
+margin_bottom = 187.0
+rect_min_size = Vector2( 0, 110 )
 custom_colors/default_color = Color( 0.866667, 0.666667, 0.278431, 1 )
-custom_fonts/mono_font = SubResource( 13 )
-custom_fonts/normal_font = SubResource( 13 )
+custom_fonts/mono_font = SubResource( 14 )
+custom_fonts/normal_font = SubResource( 15 )
 bbcode_enabled = true
 bbcode_text = "Игроки:
+
+
+
+
 "
 text = "Игроки:
+
+
+
+
 "
-fit_content_height = true
 
 [node name="TextureRect" type="TextureRect" parent="BottomPanel"]
 anchor_top = 0.5
