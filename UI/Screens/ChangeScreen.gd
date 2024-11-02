@@ -153,7 +153,12 @@ func _on_change_card_pressed(button):
 func _on_player_lot_pressed(button):
 	if(MainTraderId != get_tree().get_network_unique_id()):
 		return
-
+	
+	# Проверяем существует ли такое предложение
+	var trade_lot = Lobby.player_trade_lots[int(button.name)]
+	if (trade_lot == null):
+		return
+		
 	ChooicedPlayerId = button.name
 	_set_opponent_card(Lobby.player_trade_lots[int(button.name)])
 
