@@ -117,6 +117,19 @@ func _on_MovePanel_gui_input(event):
 			else:
 				IsPositionChanging = false
 
+# Вызывается когда изменён размер корневого элемента
+func _on_Chat_resized():
+	# Выравниваем чат, если он попал за пределы корневого элемента
+	if (VChatContainer.rect_position.x < rect_position.x):
+		VChatContainer.rect_position.x = rect_position.x
+	if (VChatContainer.rect_position.y < rect_position.y):
+		VChatContainer.rect_position.y = rect_position.y
+	if (VChatContainer.rect_position.x + VChatContainer.rect_size.x > rect_size.x):
+		VChatContainer.rect_size.x = rect_size.x - VChatContainer.rect_position.x
+	if (VChatContainer.rect_position.y + VChatContainer.rect_size.y > rect_size.y):
+		VChatContainer.rect_size.y = rect_size.y - VChatContainer.rect_position.y
+
+
 
 # Нажатие MinimizeButton
 func _on_MinimizeButton_pressed():

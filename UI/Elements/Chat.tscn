@@ -179,6 +179,7 @@ enabled_focus_mode = 0
 text = "Отправить"
 icon_align = 1
 
+[connection signal="resized" from="." to="." method="_on_Chat_resized"]
 [connection signal="gui_input" from="VChatContainer/HBoxContainer/MovePanel" to="." method="_on_MovePanel_gui_input"]
 [connection signal="pressed" from="VChatContainer/HBoxContainer/MinimizeButton" to="." method="_on_MinimizeButton_pressed"]
 [connection signal="gui_input" from="VChatContainer/HBoxContainer/ResizeButton" to="." method="_on_ResizeButton_gui_input"]
