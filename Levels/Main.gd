@@ -180,6 +180,9 @@ remotesync func _trade_cards_between_players(playerid, playerid2, card_name, car
 	_give_card_to_player(playerid2, card_name)
 	_remove_card_from_player(playerid, card_name)
 	_remove_card_from_player(playerid2, card_name2)
+	
+	#Уведомление в чате
+	Game.Chat.trade_cards_between_players(playerid, playerid2)
 
 
 remotesync func _give_card_to_player(playerid, card_name):
@@ -281,6 +284,7 @@ func _on_players_ended_discussion():
 func _on_player_end_playing(playerid):
 	Lobby.player_info[playerid].is_end_game = true
 	Game.add_card_to_player(playerid)
+	rpc("_on_player_end_playing_CLIENT", playerid)
 	# Проверяем закончили ли игру все игроки
 	var bAllEnded = true
 	for id in Lobby.player_ids:
@@ -293,6 +297,11 @@ func _on_player_end_playing(playerid):
 
 remotesync func _all_players_end_playing():
 	Game._all_players_end_playing()
+	
+	
+remotesync func _on_player_end_playing_CLIENT(player_id):
+	Game.Chat._on_player_end_playing(player_id)
+
 
 func _on_player_want_move():
 	rpc("_player_want_to_move")
@@ -301,6 +310,7 @@ func _on_player_want_move():
 master func _on_started_trading_between_players(main_trader, type_tradeing):
 	#Если на арене меньше двух игроков, то обмена не происходит
 	if(Lobby.player_ids.size() < 2):
+		_on_players_ended_discussion()
 		return
 	MainTraderId = main_trader
 	Game.show_main_traider_name(main_trader)
@@ -325,7 +335,14 @@ func _on_player_want_to_set_pos(new_pos):
 func _on_player_disconnected(id):
 	var DeletedPlayer: int = Lobby.player_ids.find(id)
 	
-	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):	
+	#Уведомление в чате
+	Game.Chat._on_player_disconnected(id)
+	
+	#Удаляем игрока из списка движущихся
+	Game.Board._moving_players.erase(id)
+	
+	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):
+		Lobby.player_info.erase(id)
 		Game.refresh_playerlist()
 		Game.ChangeScreen.remove_player_from_playerlist(id)
 		return
@@ -333,8 +350,6 @@ func _on_player_disconnected(id):
 	Lobby.player_ids.erase(id)
 	Game.refresh_playerlist()
 	
-	#Удаляем игрока из списка движущихся
-	Game.Board._moving_players.erase(id)
 	
 	# Если все игроки вышли, выводим надпись
 	if (Lobby.player_ids.size() == 0):

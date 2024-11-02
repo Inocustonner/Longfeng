@@ -66,10 +66,6 @@ slave func _on_unregister_player(id):
 	if(player_info.has(id) and player_info[id].obj != null):
 		player_info[id].obj.queue_free()
 
-		# Удаляем информацию об игроке на стороне клиента
-		if (not get_tree().is_network_server()):
-			player_info.erase(id)
-
 
 # Запрашивает информацию о всех игроках у сервера
 master func _get_info_all_players():

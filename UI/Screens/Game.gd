@@ -56,6 +56,8 @@ onready var MakeMoveButton = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContai
 onready var ChangeScreen = $ChangeScreen
 onready var CloseCardsButton = $CloseCardsButton
 
+onready var Chat = $Chat
+
 
 func _ready():
 	ChangeScreen.connect("on_start_trade_card", self, "_on_start_trade_card")
@@ -64,6 +66,7 @@ func _ready():
 	Board.connect("completed_move", self, "_on_completed_move_on_board")
 	#Если нажать на карту, то она пропадёт
 	NewCard.get_child(1).connect("pressed", self, "hide_new_card_to_player")
+	
 	
 	#Если версия серверная, то убираем кнопку "Ваши карточки"
 	if (MainMenu.SERVER_VERSION):
@@ -101,7 +104,7 @@ func refresh_playerlist():
 		var Name = Lobby.player_info[player].name
 		var NameColor = ColorsPlayer[Lobby.player_info[player].position_list]
 		var Alpha = "ff"
-		# На стороне сервера вышедшие игроки не пропадают из списка, а становятся полупрозрачными
+		# Вышедшие игроки не пропадают из списка, а становятся полупрозрачными
 		if (get_tree().is_network_server() and Lobby.player_ids.find(player) == -1):
 			Alpha = "60"
 		
@@ -243,6 +246,8 @@ remote func _player_rollback(id, moves_count, required_count):
 	if (id == get_tree().get_network_unique_id()):
 		IndicatorMoveRichLabel.bbcode_text = "Вас откатывает из-за недостаточного количества ходов! "
 		IndicatorMoveRichLabel.bbcode_text += str(moves_count) + "/" + str(required_count)
+		# Уведомление для игрока в чате
+		Chat.append_to_chat(IndicatorMoveRichLabel.bbcode_text)
 		
 remote func _started_discussion():
 	IndicatorMoveRichLabel.bbcode_text = "Происходит обсуждение!"
