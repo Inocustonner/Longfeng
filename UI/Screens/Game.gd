@@ -34,7 +34,7 @@ var SpritesDice = [
 	preload("res://Art/Sprites/Sprite_Dice_6.png")
 ]
 
-var ColorsPlayer = [
+const ColorsPlayer = [
 	"#d30c7b", "#a7abdd", "#12a0a0",
 	"#0a8754", "#535353", "#16c612"
 ]
