@@ -409,6 +409,7 @@ func _on_ButtonEndDisc_pressed():
 
 
 func _on_ButtonMakeMove_pressed():
+	hide_make_move_button()
 	emit_signal("on_player_want_move")
 
 

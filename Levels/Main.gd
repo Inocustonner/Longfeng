@@ -109,7 +109,7 @@ master func _player_want_to_move():
 		# Если попадаем на "Финиш" или выходим за доску, то вычисляем точное расстояние до клетки, чтобы избежать ошибок
 		if (FieldType == Game.BoardField.ETypeBoard.FINISH):
 			moves = Game.Board.BoardFields.get_child_count() - 1 - Lobby.player_info[id].position
-			
+
 		Game.increment_player_position(get_tree().get_rpc_sender_id(), moves)
 		rpc("_make_move", get_tree().get_rpc_sender_id(), Lobby.player_info[id].position, moves)
 		_next_player()
@@ -170,7 +170,6 @@ remotesync func _ALL_move_player_to_him_pos(playerid, new_pos):
 remotesync func _make_move(playerid, position, moves):
 	if(get_tree().get_network_unique_id() == playerid):
 		Game.show_amount_moves(moves)
-		Game.hide_make_move_button()
 			
 	Game.set_player_position(playerid, position)
 
