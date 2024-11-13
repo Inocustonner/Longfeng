@@ -258,6 +258,7 @@ remote func _all_players_end_playing():
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
 	NewCard.get_child(0).text = "N/A"
+	NewCard.hide()
 	IndicatorMoveRichLabel.bbcode_text = "Выберете поле на которое хотите переместиться!"
 	IndicatorMoveBox.get_child(1).hide()
 	
