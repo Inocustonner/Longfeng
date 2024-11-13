@@ -112,7 +112,7 @@ master func _player_want_to_move():
 
 		Game.increment_player_position(get_tree().get_rpc_sender_id(), moves)
 		rpc("_make_move", get_tree().get_rpc_sender_id(), Lobby.player_info[id].position, moves)
-		_next_player()
+
 
 
 master func _player_want_to_trade(card_name):
@@ -267,6 +267,7 @@ remotesync func _started_discussion():
 	Game._started_discussion()
 
 func _on_players_ended_discussion():
+	_next_player()
 	bDiscussion = false
 	
 	var prev_player_id = _get_prev_player_id()
