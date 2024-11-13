@@ -109,10 +109,10 @@ master func _player_want_to_move():
 		# Если попадаем на "Финиш" или выходим за доску, то вычисляем точное расстояние до клетки, чтобы избежать ошибок
 		if (FieldType == Game.BoardField.ETypeBoard.FINISH):
 			moves = Game.Board.BoardFields.get_child_count() - 1 - Lobby.player_info[id].position
-			
+
 		Game.increment_player_position(get_tree().get_rpc_sender_id(), moves)
 		rpc("_make_move", get_tree().get_rpc_sender_id(), Lobby.player_info[id].position, moves)
-		_next_player()
+
 
 
 master func _player_want_to_trade(card_name):
@@ -148,18 +148,29 @@ master func _player_maked_trade(ChooisedPlayerId):
 
 
 master func _move_player_to_him_pos(new_pos):
+	# Дополнительная проверка на стороне сервера:
+	# Получаем тип выбранной клетки
+	var FieldType = Game.Board.get_field(new_pos).Type
+	# Не позволяем совершить ход на кнопку "Сам себе хозяин",
+	# чтобы не дать возможности игроку совершать ход бесконечно с клетки на клетку
+	if (FieldType == Game.BoardField.ETypeBoard.YOUROWNBOSS):
+		return
+	
+	# Перемещаем игрока на новую позицию и на стороне сервера, и на стороне клиентов
 	rpc("_ALL_move_player_to_him_pos", get_tree().get_rpc_sender_id(), new_pos)
+	# Вызываем метод для обработки новой позиции игрока (Выдачи карточки, обмена и т.п.)
+	Game.do_move(get_tree().get_rpc_sender_id())
 
 
 remotesync func _ALL_move_player_to_him_pos(playerid, new_pos):
 	Game.set_player_position(playerid, new_pos)
-	_on_players_ended_discussion()
+
 
 
 remotesync func _make_move(playerid, position, moves):
 	if(get_tree().get_network_unique_id() == playerid):
 		Game.show_amount_moves(moves)
-	
+			
 	Game.set_player_position(playerid, position)
 
 
@@ -168,6 +179,9 @@ remotesync func _trade_cards_between_players(playerid, playerid2, card_name, car
 	_give_card_to_player(playerid2, card_name)
 	_remove_card_from_player(playerid, card_name)
 	_remove_card_from_player(playerid2, card_name2)
+	
+	#Уведомление в чате
+	Game.Chat.trade_cards_between_players(playerid, playerid2)
 
 
 remotesync func _give_card_to_player(playerid, card_name):
@@ -190,8 +204,8 @@ remote func _hide_new_card():
 	Game.hide_new_card_to_player()
 
 
-remote func _let_player_make_move(bLet : bool):
-	Game.let_make_move(bLet)
+remotesync func _let_player_make_move(player_id):
+	Game.let_make_move(player_id)
 
 
 remote func _player_maked_move():
@@ -239,31 +253,54 @@ func _on_player_released(id):
 	if(get_tree().is_network_server()):
 		if(PlayerNow == NO_BODY_GO):
 			_next_player()
-		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+		# Уведомляем нового игрока о том, кто совершает ход
+		rpc_id(id, "_let_player_make_move", Lobby.player_ids[PlayerNow])
+		# Обновляем игрока, совершающего ход и на сервере, на случай, если он изменился
+		_let_player_make_move(Lobby.player_ids[PlayerNow])
 
 
 func _on_players_started_discussion():
+	rpc("_started_discussion")
 	bDiscussion = true
-
+	
+remotesync func _started_discussion():
+	Game._started_discussion()
 
 func _on_players_ended_discussion():
+	_next_player()
 	bDiscussion = false
 	
 	var prev_player_id = _get_prev_player_id()
 	if prev_player_id != -1:
 		rpc_id(int(prev_player_id), "_hide_new_card")
-		rpc_id(int(prev_player_id), "_let_player_make_move", false)
-
+	
 	if (PlayerNow != NO_BODY_GO):
-		rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+		# Оповещаем всех клиентов о том, кто совершает ход
+		rpc("_let_player_make_move", Lobby.player_ids[PlayerNow])
+		
+	
 
 
 func _on_player_end_playing(playerid):
 	Lobby.player_info[playerid].is_end_game = true
 	Game.add_card_to_player(playerid)
-	rpc_id(playerid, "_let_player_make_move", false)
-	#rpc_id(playerid, "_player_stop_game")
-	#_on_players_ended_discussion()
+	rpc("_on_player_end_playing_CLIENT", playerid)
+	# Проверяем закончили ли игру все игроки
+	var bAllEnded = true
+	for id in Lobby.player_ids:
+		if (Lobby.player_info[id].is_end_game == false):
+			bAllEnded = false
+			break
+	# Если все закончили игру, то уведомляем об этом игроков
+	if (bAllEnded):
+		rpc("_all_players_end_playing")
+
+remotesync func _all_players_end_playing():
+	Game._all_players_end_playing()
+	
+	
+remotesync func _on_player_end_playing_CLIENT(player_id):
+	Game.Chat._on_player_end_playing(player_id)
 
 
 func _on_player_want_move():
@@ -273,8 +310,10 @@ func _on_player_want_move():
 master func _on_started_trading_between_players(main_trader, type_tradeing):
 	#Если на арене меньше двух игроков, то обмена не происходит
 	if(Lobby.player_ids.size() < 2):
+		_on_players_ended_discussion()
 		return
 	MainTraderId = main_trader
+	Game.show_main_traider_name(main_trader)
 	rpc("_show_to_players_change_screen", true, main_trader, type_tradeing)
 
 
@@ -296,13 +335,38 @@ func _on_player_want_to_set_pos(new_pos):
 func _on_player_disconnected(id):
 	var DeletedPlayer: int = Lobby.player_ids.find(id)
 	
-	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):	
+	#Уведомление в чате
+	Game.Chat._on_player_disconnected(id)
+	
+	#Удаляем игрока из списка движущихся
+	Game.Board._moving_players.erase(id)
+	
+	if(DeletedPlayer == -1 or (not get_tree().is_network_server())):
+		Lobby.player_info.erase(id)
 		Game.refresh_playerlist()
 		Game.ChangeScreen.remove_player_from_playerlist(id)
 		return
 
 	Lobby.player_ids.erase(id)
 	Game.refresh_playerlist()
+	
+	
+	# Если все игроки вышли, выводим надпись
+	if (Lobby.player_ids.size() == 0):
+		Game._on_ButtonEndDisc_pressed()
+		Game.IndicatorMoveRichLabel.bbcode_text = "Никто не совершает ход!"
+		return
+		
+	# Если все игроки закончили игру, уведомляем игроков
+	var bAllEnded = true
+	for id in Lobby.player_ids:
+		if (Lobby.player_info[id].is_end_game == false):
+			bAllEnded = false
+			break
+	if (bAllEnded):
+		rpc("_all_players_end_playing")
+		PlayerNow = NO_BODY_GO
+		return
 	
 	#Если происходит обмен и остаётся менее двух игроков или игру покидает MainTraider, то закрываем экран обмена
 	if (MainTraderId != 0):
@@ -313,12 +377,11 @@ func _on_player_disconnected(id):
 
 	if(PlayerNow == DeletedPlayer):
 		PlayerNow -= 1
-		_next_player()
-		bDiscussion = false
+		Game._on_ButtonEndDisc_pressed()
 		if (Lobby.player_ids.size() > 0 and PlayerNow != NO_BODY_GO and MainTraderId == 0):
-			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+			rpc("_let_player_make_move", Lobby.player_ids[PlayerNow])
 	elif(PlayerNow > DeletedPlayer):
 		PlayerNow -= 1
 		assert(PlayerNow >= 0)
 		if (MainTraderId == 0):
-			rpc_id(int(Lobby.player_ids[PlayerNow]), "_let_player_make_move", true)
+			rpc("_let_player_make_move", Lobby.player_ids[PlayerNow])

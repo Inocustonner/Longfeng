@@ -34,20 +34,29 @@ var SpritesDice = [
 	preload("res://Art/Sprites/Sprite_Dice_6.png")
 ]
 
-var ColorsPlayer = [
+const ColorsPlayer = [
 	"#d30c7b", "#a7abdd", "#12a0a0",
 	"#0a8754", "#535353", "#16c612"
 ]
 
+#Загружаем код MainMenu
+const MainMenu = preload("MainMenu.gd")
+
 onready var PlayerListText = $BottomPanel/HBoxContainer/VBoxContainer2/PlayerListText
+onready var CardListButton = $BottomPanel/HBoxContainer/Button
 onready var Board = $Board
 onready var BoardField = $Board/Background/BoardField
 onready var CardsListPlayer = $CardsListPlayer
 onready var NewCard = $NewCard
 onready var CuratorNewCard = $CuratorNewCard
-onready var IndicatorMove = $BottomPanel/HBoxContainer/VBoxContainer
+onready var IndicatorMoveBox = $BottomPanel/HBoxContainer/VBoxContainer
+onready var IndicatorMoveRichLabel = $BottomPanel/HBoxContainer/VBoxContainer/RichLabel
+# MakeMoveButton - Только кнопка без кубика
+onready var MakeMoveButton = $BottomPanel/HBoxContainer/VBoxContainer/HBoxContainer2/Button
 onready var ChangeScreen = $ChangeScreen
 onready var CloseCardsButton = $CloseCardsButton
+
+onready var Chat = $Chat
 
 
 func _ready():
@@ -57,6 +66,11 @@ func _ready():
 	Board.connect("completed_move", self, "_on_completed_move_on_board")
 	#Если нажать на карту, то она пропадёт
 	NewCard.get_child(1).connect("pressed", self, "hide_new_card_to_player")
+	
+	
+	#Если версия серверная, то убираем кнопку "Ваши карточки"
+	if (MainMenu.SERVER_VERSION):
+		CardListButton.hide()
 	
 	for board in range(1, 113):
 		Board.get_field(board).connect("on_pressed", self, "_on_pressed_on_board", [Board.get_field(board).get_board_position()])
@@ -70,7 +84,6 @@ func add_player(id):
 	call_deferred("add_child", ply)
 	ply.set_nickname(Lobby.player_info[id].name)
 	ply.set_background(Lobby.player_info[id].position_list)
-
 
 	return ply
 	
@@ -88,14 +101,26 @@ func refresh_playerlist():
 		AlphaPos = 1
 		
 	for player in Lobby.player_info:
+		var Name = Lobby.player_info[player].name
+		var NameColor = ColorsPlayer[Lobby.player_info[player].position_list]
 		var Alpha = "ff"
-		# На стороне сервера вышедшие игроки не пропадают из списка, а становятся полупрозрачными
+		# Вышедшие игроки не пропадают из списка, а становятся полупрозрачными
 		if (get_tree().is_network_server() and Lobby.player_ids.find(player) == -1):
 			Alpha = "60"
-		PlayerListText.bbcode_text += "[color="+ ColorsPlayer[Lobby.player_info[player].position_list].insert(AlphaPos, Alpha) + "]" + Lobby.player_info[player].name + "[/color] "
+		
+		# Добавляем в список никнейм с цветом, присвоенным игроку
+		PlayerListText.bbcode_text += "[color="+ NameColor.insert(AlphaPos, Alpha) + "]" + Name + "[/color] "
 		row_amount += 1
-
-		if(row_amount == 2):
+		
+		# На стороне клиента добавляем подпись "(Вы)" к никнейму текущего клиента
+		if (not get_tree().is_network_server() and player == get_tree().get_network_unique_id()):
+			PlayerListText.bbcode_text += "(Вы)"
+			# Делаем перенос строки после ника текущего клиента (Ради красоты)
+			if (row_amount == 1):
+				row_amount += 1
+		
+		# Каждые 2 ника в списке делаем перенос строки
+		if(row_amount % 2 == 0):
 			PlayerListText.bbcode_text += "\n"
 			row_amount = 0
 	PlayerListText.bbcode_text += "[/center]"
@@ -118,7 +143,7 @@ func increment_player_position(id, i: int):
 	if(Lobby.player_info[id].amount_moves >= MAX_MOVES_ON_SECTION):
 		var now_sec = _get_section_from_position(Lobby.player_info[id].position)
 
-		# усовия завершения игры игроком id
+		# условия завершения игры игроком id
 		if(now_sec + 1 == 3):
 			set_player_position(id, PositionSections[2][1])
 			emit_signal("on_player_end_playing", id)
@@ -134,6 +159,8 @@ func increment_player_position(id, i: int):
 		if(Lobby.player_info[id].amount_moves < MAX_MOVES_ON_SECTION):
 			print(str(id) + " : недостаточно ходов, возвращаем в начало!")
 			var now_sec = _get_section_from_position(Lobby.player_info[id].position)
+			# Оповещаем клиентов о том, что для игрока случился откат из-за недостаточного количества ходов
+			rpc("_player_rollback", id, Lobby.player_info[id].amount_moves, MAX_MOVES_ON_SECTION)
 			set_player_position(id, PositionSections[now_sec][0] + 1)
 			do_move(id)
 
@@ -215,12 +242,26 @@ remote func add_card_to_player_CLIENT(id, card):
 remote func _show_card_to_player(card_name):
 	NewCard.get_child(0).text = card_name
 
+remote func _player_rollback(id, moves_count, required_count):
+	if (id == get_tree().get_network_unique_id()):
+		IndicatorMoveRichLabel.bbcode_text = "Вас откатывает из-за недостаточного количества ходов! "
+		IndicatorMoveRichLabel.bbcode_text += str(moves_count) + "/" + str(required_count)
+		# Уведомление для игрока в чате
+		Chat.append_to_chat(IndicatorMoveRichLabel.bbcode_text)
+		
+remote func _started_discussion():
+	IndicatorMoveRichLabel.bbcode_text = "Происходит обсуждение!"
+	
+remote func _all_players_end_playing():
+	IndicatorMoveRichLabel.bbcode_text = "Все игроки закончили игру!"
 
 # Позволяет игроку выбрать новое место "Сам себе хозяин"
 remote func _let_player_choose_new_pos():
 	NewCard.get_child(0).text = "N/A"
-	IndicatorMove.get_child(0).get_child(0).text = "Выберите поле на которое хотите переместиться!"
-	IndicatorMove.get_child(1).hide()
+	NewCard.hide()
+	IndicatorMoveRichLabel.bbcode_text = "Выберете поле на которое хотите переместиться!"
+	IndicatorMoveBox.get_child(1).hide()
+	
 
 	for board in range(1, 113):
 		Board.get_field(board).active_button(true)
@@ -237,7 +278,7 @@ func hide_new_card_to_player():
 
 
 func show_amount_moves(moves):
-	IndicatorMove.get_child(1).get_child(0).texture = SpritesDice[moves]
+	IndicatorMoveBox.get_child(1).get_child(0).texture = SpritesDice[moves]
 
 	var timer := Timer.new()
 	add_child(timer)
@@ -248,7 +289,18 @@ func show_amount_moves(moves):
 
 
 func _hide_amount_moves():
-	IndicatorMove.get_child(1).get_child(0).texture = SpritesDice[0]
+	IndicatorMoveBox.get_child(1).get_child(0).texture = SpritesDice[0]
+	
+
+#Показать кнопку "Бросить кубик"
+func show_make_move_button():
+	#Скрыть кнопку "Бросить кубик"
+	MakeMoveButton.show();
+
+#Скрыть кнопку "Бросить кубик"
+func hide_make_move_button():
+	#Скрыть кнопку "Бросить кубик"
+	MakeMoveButton.hide();
 
 
 # Возвращает номер секции (от 0) в которой находится позиция
@@ -258,23 +310,49 @@ func _get_section_from_position(position):
 			return i
 
 
-func let_make_move(bLet : bool):
-	if(bLet):
-		IndicatorMove.get_child(0).get_child(0).text = "Ваш ход!"
-		IndicatorMove.get_child(1).show()
+func let_make_move(player_id):
+	if(player_id == get_tree().get_network_unique_id()):
+		IndicatorMoveRichLabel.bbcode_text = "Ваш ход!"
+		IndicatorMoveBox.get_child(1).show()
+		show_make_move_button()
 	else:
-		IndicatorMove.get_child(0).get_child(0).text = "Сейчас ходите не вы!"
-		IndicatorMove.get_child(1).hide()
+		IndicatorMoveRichLabel.bbcode_text = "Сейчас совершает ход: "
+		# Выводим цветной ник игрока, совершающего ход
+		var Name = Lobby.player_info[player_id].name
+		var NameColor = ColorsPlayer[Lobby.player_info[player_id].position_list]
+		IndicatorMoveRichLabel.bbcode_text += "[color=" + NameColor + "]"
+		IndicatorMoveRichLabel.bbcode_text += Name
+		IndicatorMoveRichLabel.bbcode_text += "[/color]"
+		IndicatorMoveBox.get_child(1).hide()
+		hide_make_move_button()
 
 
 func hide_button_move():
-	IndicatorMove.hide()
-
+	#IndicatorMoveBox.hide()
+	# Т.к. с настоящим коммитом IndicatorMoveRichLabel несёт в себе куда больше уведомлений,
+	# нет никакого смысла в его сокрытии, куратор тоже может следить за информацией об игре.
+	pass
 
 func show_change_screen_to_player(bShow, main_trader, type_tradeing):
+	if(bShow):
+		show_main_traider_name(main_trader)
 	ChangeScreen.show_screen(bShow, main_trader, type_tradeing)
 
-
+# Выводит информацию о MainTraider в IndicatorMoveRichLabel
+func show_main_traider_name(main_trader):
+	# Выводим ник игрока, совершающего обмен
+	if (main_trader == get_tree().get_network_unique_id()):
+		IndicatorMoveRichLabel.bbcode_text = "Вы совершаете обмен!"
+	else:
+		IndicatorMoveRichLabel.bbcode_text = "Сейчас совершает обмен: "
+		# Выводим цветной ник игрока, совершающего ход
+		var Name = Lobby.player_info[main_trader].name
+		var NameColor = ColorsPlayer[Lobby.player_info[main_trader].position_list]
+		IndicatorMoveRichLabel.bbcode_text += "[color=" + NameColor + "]"
+		IndicatorMoveRichLabel.bbcode_text += Name
+		IndicatorMoveRichLabel.bbcode_text += "[/color]"
+		
+	
 # Вкл/Выкл зеленую лампочку для показания желания обмена игрока
 func set_active_for_change_card(id, bActive):
 	ChangeScreen.set_active_player(id, bActive)
@@ -286,8 +364,16 @@ func update_player_trades(playerid, card_name):
 
 func _show_to_currator_new_card(name_card, desc):
 	CuratorNewCard.get_child(1).disabled = true
+	var card_desc_panel = CuratorNewCard.get_child(2)
+	var card_desc_label = CuratorNewCard.get_child(2).get_child(0).get_child(0)
 	CuratorNewCard.get_child(0).get_child(0).text = name_card
-	CuratorNewCard.get_child(2).get_child(0).get_child(0).text = desc
+#Если у карты есть описание, то показываем ее, иначе скрываем элемент с экрана
+	if desc.length() > 0:
+		card_desc_label.text = desc
+		card_desc_panel.visible = true
+	else:
+		card_desc_panel.visible = false
+		
 	CuratorNewCard.show()
 
 	var timer := Timer.new()
@@ -324,6 +410,7 @@ func _on_ButtonEndDisc_pressed():
 
 
 func _on_ButtonMakeMove_pressed():
+	hide_make_move_button()
 	emit_signal("on_player_want_move")
 
 
@@ -351,6 +438,16 @@ func _on_CloseCardsButton_pressed():
 
 
 func _on_pressed_on_board(pos):
+	# Получаем тип выбранной клетки
+	var FieldType = Board.get_field(pos).Type
+	# Не позволяем совершить ход на кнопку "Сам себе хозяин",
+	# чтобы не дать возможности игроку совершать ход бесконечно с клетки на клетку
+	if (FieldType == BoardField.ETypeBoard.YOUROWNBOSS):
+		# Выводим текст, предупреждающий игрока
+		IndicatorMoveRichLabel.bbcode_text = "Вы не можете совершить перемещение\n"
+		IndicatorMoveRichLabel.bbcode_text += "на другую клетку \"Сам себе хозяин\""
+		return
+	
 	emit_signal("on_player_want_to_set_pos", pos)
 	for board in range(1, 113):
 		Board.get_field(board).active_button(false)
