@@ -353,6 +353,7 @@ func _on_player_disconnected(id):
 	
 	# Если все игроки вышли, выводим надпись
 	if (Lobby.player_ids.size() == 0):
+		Game._on_ButtonEndDisc_pressed()
 		Game.IndicatorMoveRichLabel.bbcode_text = "Никто не совершает ход!"
 		return
 		
@@ -376,8 +377,7 @@ func _on_player_disconnected(id):
 
 	if(PlayerNow == DeletedPlayer):
 		PlayerNow -= 1
-		_next_player()
-		bDiscussion = false
+		Game._on_ButtonEndDisc_pressed()
 		if (Lobby.player_ids.size() > 0 and PlayerNow != NO_BODY_GO and MainTraderId == 0):
 			rpc("_let_player_make_move", Lobby.player_ids[PlayerNow])
 	elif(PlayerNow > DeletedPlayer):
